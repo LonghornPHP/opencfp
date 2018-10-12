@@ -23,8 +23,11 @@ html {
   -webkit-text-size-adjust: 100%; /* 2 */
 }
 
-header,nav{
+header,nav {
     display: block;
+}
+
+html > nav {
     background-color: #7d87b7;
 }
 
