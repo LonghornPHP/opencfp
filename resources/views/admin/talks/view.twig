@@ -3,7 +3,7 @@
     <div class="flex items-center justify-between">
         <div>
             <h2 class="mb-2">
-                {{ talk.title|raw }} <span class="text-grey-dark">&mdash; <a href="{{ url('admin_speaker_view', { id: talk.speaker.id }) }}">{{ talk.speaker.name }}</a></span>
+                {{ talk.title|raw }} <span class="text-grey-dark">&mdash; <a href="{{ url('admin_speaker_view', { id: talk.user_id }) }}">{{ talk.speaker.name }}</a></span>
             </h2>
             {% if talk.slides is defined and talk.slides is not empty %}
                 <div><i class="fa fa-television mr-1"></i> <a class="hover:text-brand" href="{{ talk.slides }}">{{ talk.slides }}</a></div>
