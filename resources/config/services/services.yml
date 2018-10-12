@@ -25,6 +25,7 @@ services:
       $resetForm: '@OpenCFP\Http\Form\ResetForm'
       $reviewerUsers: '%reviewer.users%'
       $showSubmissionCount: '%application.show_submission_count%'
+      $dateFormat: '%application.date_format%'
 
   OpenCFP\Http\Action\Security\SsoAction:
     public: true
