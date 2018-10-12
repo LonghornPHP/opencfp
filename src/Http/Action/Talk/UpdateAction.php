@@ -69,6 +69,11 @@ final class UpdateAction
     private $applicationEndDate;
 
     /**
+     * @var string
+     */
+    private $dateFormat;
+
+    /**
      * @var Environment
      */
     private $twig;
@@ -88,7 +93,8 @@ final class UpdateAction
         Routing\Generator\UrlGeneratorInterface $urlGenerator,
         string $applicationEmail,
         string $applicationTitle,
-        string $applicationEndDate
+        string $applicationEndDate,
+        string $dateFormat
     ) {
         $this->authentication     = $authentication;
         $this->talkHelper         = $talkHelper;
@@ -100,6 +106,7 @@ final class UpdateAction
         $this->applicationEmail   = $applicationEmail;
         $this->applicationTitle   = $applicationTitle;
         $this->applicationEndDate = $applicationEndDate;
+        $this->dateFormat         = $dateFormat;
     }
 
     public function __invoke(HttpFoundation\Request $request): HttpFoundation\Response
@@ -209,7 +216,7 @@ final class UpdateAction
             'email'   => $this->applicationEmail,
             'title'   => $this->applicationTitle,
             'talk'    => $talk->title,
-            'enddate' => $this->applicationEndDate,
+            'enddate' => (new \DateTime($this->applicationEndDate))->format($this->dateFormat),
         ];
 
         try {
