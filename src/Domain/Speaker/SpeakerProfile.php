@@ -43,6 +43,11 @@ class SpeakerProfile
         $this->hiddenProperties = $hiddenProperties;
     }
 
+    public function getId()
+    {
+        return $this->speaker->id;
+    }
+
     public function isAllowedToSee(string $property): bool
     {
         return !\in_array($property, $this->hiddenProperties);
