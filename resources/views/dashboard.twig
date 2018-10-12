@@ -82,7 +82,7 @@ function deleteTalk(tid) {
                 <div id="talk-{{ talk.id }}" class="flex items-center justify-between mb-8">
                     <div class="w-5/6">
                         <h2 class="m-0"><a href="{{ url('talk_view', { id: talk.id }) }}">{{ talk.title|raw }}</a></h2>
-                        <p class="text-sm text-dark-soft mb-3">{{ talk.description | truncate(200) }}</p>
+                        <p class="text-sm text-dark-soft mb-3">{{ talk.description | striptags | markdown | truncate(200) }}</p>
                         <div>
                             <span class="bg-brand text-white text-xs rounded-full py-2 px-3 mr-2"><i class="fa fa-clock-o"></i> {{ talkHelper.getTypeDisplayName(talk.type) }}</span>
                             <span class="bg-brand text-white text-xs rounded-full py-2 px-3"><i class="fa fa-graduation-cap"></i> {{ talkHelper.getCategoryDisplayName(talk.category) }}</span>
