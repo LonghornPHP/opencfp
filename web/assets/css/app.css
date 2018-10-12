@@ -27,7 +27,7 @@ header,nav {
     display: block;
 }
 
-html > nav {
+body > nav {
     background-color: #7d87b7;
 }
 
