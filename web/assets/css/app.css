@@ -450,15 +450,15 @@ table {
 }
 
 .btn-brand {
-  background-color: #e04c3e;
+  background-color: #7d87b7;
   color: #fff;
   border-width: 2px;
-  border-color: #e04c3e;
+  border-color: #7d87b7;
 }
 
 .btn-white {
   background-color: #fff;
-  color: #e04c3e;
+  color: #7d87b7;
   border-width: 2px;
   border-color: #fff;
 }
@@ -471,17 +471,17 @@ table {
 
 .btn-white-o:hover {
   background-color: #fff;
-  color: #e04c3e;
+  color: #7d87b7;
 }
 
 .btn-brand-o {
   border-width: 2px;
-  border-color: #e04c3e;
-  color: #e04c3e;
+  border-color: #7d87b7;
+  color: #7d87b7;
 }
 
 .btn-brand-o:hover {
-  background-color: #e04c3e;
+  background-color: #7d87b7;
   color: #fff;
 }
 
@@ -564,7 +564,7 @@ table {
 }
 
 .border-brand {
-  border-color: #e04c3e;
+  border-color: #7d87b7;
 }
 
 .rounded {
@@ -879,7 +879,7 @@ table {
 }
 
 .text-brand {
-  color: #e04c3e;
+  color: #7d87b7;
 }
 
 .text-grey-dark {
@@ -927,7 +927,7 @@ table {
 }
 
 .hover\:text-brand:hover {
-  color: #e04c3e;
+  color: #7d87b7;
 }
 
 .text-xs {
