@@ -78,11 +78,6 @@ final class CreateProcessAction
      */
     private $urlGenerator;
 
-    /**
-     * @var string
-     */
-    private $dateFormat;
-
     public function __construct(
         Services\Authentication $authentication,
         View\TalkHelper $talkHelper,
@@ -106,7 +101,6 @@ final class CreateProcessAction
         $this->applicationEndDate = $applicationEndDate;
         $this->twig               = $twig;
         $this->urlGenerator       = $urlGenerator;
-        $this->dateFormat         = $dateFormat;
     }
 
     public function __invoke(HttpFoundation\Request $request): HttpFoundation\Response
@@ -219,7 +213,7 @@ final class CreateProcessAction
             'email'   => $this->applicationEmail,
             'title'   => $this->applicationTitle,
             'talk'    => $talk->title,
-            'enddate' => (new \DateTime($this->applicationEndDate))->format($this->dateFormat),
+            'enddate' => $this->applicationEndDate,
         ];
 
         $message = new Swift_Message();

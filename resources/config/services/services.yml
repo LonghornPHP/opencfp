@@ -24,7 +24,6 @@ services:
       $forgotForm: '@OpenCFP\Http\Form\ForgotForm'
       $resetForm: '@OpenCFP\Http\Form\ResetForm'
       $showSubmissionCount: '%application.show_submission_count%'
-      $dateFormat: '%application.date_format%'
 
   OpenCFP\Http\Action\Security\SsoAction:
     public: true
