@@ -136,7 +136,7 @@ class SpeakerProfile
     {
         $this->assertAllowedToSee('twitter');
 
-        return $this->speaker->getTwitterUrl();
+        return User::twitterUrl($this->speaker->twitter);
     }
 
     /**
