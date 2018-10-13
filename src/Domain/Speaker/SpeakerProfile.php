@@ -136,13 +136,7 @@ class SpeakerProfile
     {
         $this->assertAllowedToSee('twitter');
 
-        $twitter = $this->speaker->twitter;
-
-        if ($twitter === null || \trim($twitter) === '') {
-            return '';
-        }
-
-        return 'https://twitter.com/' . $twitter;
+        return $this->speaker->getTwitterUrl();
     }
 
     /**
