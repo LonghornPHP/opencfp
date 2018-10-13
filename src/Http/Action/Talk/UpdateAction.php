@@ -69,6 +69,11 @@ final class UpdateAction
     private $applicationEndDate;
 
     /**
+     * @var string
+     */
+    private $dateFormat;
+
+    /**
      * @var Environment
      */
     private $twig;
