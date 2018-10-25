@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * @method Builder recent(int $limit=10)
+ * @method Builder recent(int $limit=30)
  * @method Builder selected()
  * @method Builder category()
  * @method Builder type()
@@ -56,7 +56,7 @@ class Talk extends Eloquent
      *
      * @param int $limit maximum ammount of entries to return
      */
-    public function scopeRecent(Builder $query, int $limit = 10): Builder
+    public function scopeRecent(Builder $query, int $limit = 30): Builder
     {
         return $query
             ->orderBy('created_at', 'desc')
