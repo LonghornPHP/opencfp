@@ -55,7 +55,7 @@ class TalkFilter
             $options,
             [
                 'order_by' => 'created_at',
-                'sort'     => 'ASC',
+                'sort'     => 'DESC',
             ]
         );
 
