@@ -42,7 +42,7 @@ final class DashboardAction
     public function __invoke(): array
     {
         return [
-            'speakerTotal'  => Model\User::count(),
+            'speakerTotal'  => Model\Talk::groupby('user_id')->distinct()->count(),
             'talkTotal'     => Model\Talk::count(),
             'favoriteTotal' => Model\Favorite::count(),
             'selectTotal'   => Model\Talk::where('selected', 1)->count(),
