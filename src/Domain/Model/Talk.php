@@ -21,7 +21,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @method static Builder distinct(string $column)
- * @method static Builder recent(int $limit=10)
+ * @method static Builder recent(int $limit=30)
  * @method static Builder selected()
  * @method static Builder category()
  * @method static Builder type()
@@ -66,7 +66,7 @@ class Talk extends Eloquent
      *
      * @return Builder
      */
-    public function scopeRecent(Builder $query, int $limit = 10): Builder
+    public function scopeRecent(Builder $query, int $limit = 30): Builder
     {
         return $query
             ->orderBy('created_at', 'desc')
