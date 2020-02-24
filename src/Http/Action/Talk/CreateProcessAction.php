@@ -88,8 +88,7 @@ final class CreateProcessAction
         string $applicationTitle,
         string $applicationEndDate,
         Environment $twig,
-        Routing\Generator\UrlGeneratorInterface $urlGenerator,
-        string $dateFormat
+        Routing\Generator\UrlGeneratorInterface $urlGenerator
     ) {
         $this->authentication     = $authentication;
         $this->talkHelper         = $talkHelper;
