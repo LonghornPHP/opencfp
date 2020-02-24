@@ -27,6 +27,10 @@ header,nav {
     display: block;
 }
 
+nav, main.container, body>div.container {
+    padding: 0 1.5em;
+}
+
 body > nav {
     background-color: #7d87b7;
 }
