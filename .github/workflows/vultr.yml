@@ -27,5 +27,5 @@ jobs:
           tags: ord.vultrcr.com/longhorn/cfp:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          file: ./docker/Dockerfile
+          file: .docker/Dockerfile
           context: .
