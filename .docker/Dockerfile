@@ -13,7 +13,8 @@ LABEL Description="This is the docker image for OpenCFP, a PHP-based conference 
 RUN apk update && \
     apk add --no-cache \
     nginx \
-    runit
+    runit && \
+    mkdir /tmp/nginx
 
 RUN docker-php-ext-install pdo_mysql
 
