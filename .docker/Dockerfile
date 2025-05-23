@@ -10,6 +10,11 @@ LABEL Description="This is the docker image for OpenCFP, a PHP-based conference 
       org.label-schema.version=$VERSION \
       org.label-schema.schema-version="1.0.0"
 
+RUN apk update && \
+    apk add --no-cache \
+    nginx \
+    runit
+
 RUN docker-php-ext-install pdo_mysql
 
 ENV CFP_ENV ${CFP_ENV:-development}
@@ -17,3 +22,12 @@ ENV CFP_DB_HOST ${CFP_DB_HOST:-"127.0.0.1"}
 ENV CFP_DB_PASS ${CFP_DB_PASS:-root}
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+COPY .docker/nginx/opencfp.conf /etc/nginx/nginx.conf
+COPY .docker/bin/runit-nginx /etc/service/nginx/run
+COPY .docker/bin/runsvinit /sbin/runsvinit
+
+RUN chmod +x /etc/service/nginx/run && \
+    chmod +x /sbin/runsvinit
+
+ENTRYPOINT ["/sbin/runsvinit"]
+EXPOSE 80
