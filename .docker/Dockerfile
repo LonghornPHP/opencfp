@@ -30,5 +30,7 @@ COPY .docker/bin/runsvinit /sbin/runsvinit
 RUN chmod +x /etc/service/nginx/run && \
     chmod +x /sbin/runsvinit
 
+COPY ./ /srv/application
+
 ENTRYPOINT ["/sbin/runsvinit"]
 EXPOSE 80
