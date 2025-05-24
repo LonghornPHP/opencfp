@@ -33,6 +33,8 @@ RUN chmod +x /etc/service/nginx/run && \
 
 COPY ./ /srv/application
 
+WORKDIR /srv/applicationg
+
 RUN composer install \
     --no-dev \
     --no-scripts \
