@@ -23,7 +23,8 @@ ENV CFP_DB_HOST ${CFP_DB_HOST:-"127.0.0.1"}
 ENV CFP_DB_PASS ${CFP_DB_PASS:-root}
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-COPY .docker/nginx/opencfp.conf /etc/nginx/nginx.conf
+COPY .docker/conf/nginx.conf /etc/nginx/nginx.conf
+COPY .docker/conf/fpm.conf /usr/local/etc/php-fpm.conf
 COPY .docker/bin/runit-nginx /etc/service/nginx/run
 COPY .docker/bin/runsvinit /sbin/runsvinit
 
@@ -31,6 +32,16 @@ RUN chmod +x /etc/service/nginx/run && \
     chmod +x /sbin/runsvinit
 
 COPY ./ /srv/application
+
+RUN composer install \
+    --no-dev \
+    --no-scripts \
+    --no-autoloader \
+    --prefer-dist \
+    --optimize-autoloader \
+    --classmap-authoritative \
+    --no-interaction \
+    --no-progress
 
 ENTRYPOINT ["/sbin/runsvinit"]
 EXPOSE 80
