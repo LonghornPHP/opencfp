@@ -76,7 +76,20 @@ RUN mkdir -p /etc/service/fpm /etc/service/nginx && \
     echo '#!/bin/sh' > /etc/service/fpm/run && \
     echo 'exec php-fpm -FR' >> /etc/service/fpm/run && \
     chmod +x /etc/service/*/run && \
-    chmod +x /sbin/runsvinit
+    chmod +x /sbin/runsvinit && \
+    mkdir -p /srv/application/cache && \
+    mkdir -p /srv/application/log && \
+    mkdir -p /srv/application/web/uploads && \
+    mkdir -p /tmp/nginx/{body,proxy,fastcgi,uwsgi,scgi} && \
+    mkdir -p /var/run && \
+    mkdir -p /var/cache/nginx && \
+    mkdir -p /var/log/nginx && \
+    chown -R nginx:nginx /srv/application/cache /srv/application/web/uploads /srv/application/log && \
+    chmod -R 755 /srv/application/cache /srv/application/web/uploads /srv/application/log && \
+    chgrp -R nginx /srv/application/cache /srv/application/web/uploads /srv/application/log && \
+    # Ensure nginx can write to temp and cache directories
+    chown -R nginx:nginx /tmp/nginx /var/cache/nginx /var/log/nginx && \
+    chmod -R 755 /tmp/nginx /var/cache/nginx /var/log/nginx
 
 ENTRYPOINT ["/sbin/runsvinit"]
 EXPOSE 80
