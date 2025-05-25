@@ -1,4 +1,4 @@
-FROM php:7-fpm-alpine
+FROM php:7-fpm-alpine as base
 
 LABEL Description="This is the docker image for OpenCFP, a PHP-based conference talk submission system." \
       org.label-schema.name=$IMAGE_NAME \
@@ -22,20 +22,19 @@ ENV CFP_ENV ${CFP_ENV:-development}
 ENV CFP_DB_HOST ${CFP_DB_HOST:-"127.0.0.1"}
 ENV CFP_DB_PASS ${CFP_DB_PASS:-root}
 
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-COPY .docker/conf/nginx.conf /etc/nginx/nginx.conf
-COPY .docker/conf/fpm.conf /usr/local/etc/php-fpm.conf
-COPY .docker/bin/runit-nginx /etc/service/nginx/run
-COPY .docker/bin/runsvinit /sbin/runsvinit
+FROM base as composer-deps
+# Install composer
+COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 
-RUN chmod +x /etc/service/nginx/run && \
-    chmod +x /sbin/runsvinit
+ENV COMPOSER_ALLOW_SUPERUSER=1
+WORKDIR /app
 
-COPY ./ /srv/application
+# Copy only what's needed for composer install
+COPY composer.json composer.lock ./
 
-WORKDIR /srv/application
-
-RUN composer install \
+# Install dependencies with optimal flags
+RUN --mount=type=cache,target=/root/.composer/cache \
+    composer install \
     --no-dev \
     --no-scripts \
     --no-autoloader \
@@ -44,6 +43,40 @@ RUN composer install \
     --classmap-authoritative \
     --no-interaction \
     --no-progress
+
+# Copy the rest of the application
+COPY . .
+
+# Generate optimized autoloader and remove unnecessary files
+RUN composer dump-autoload --optimize --classmap-authoritative && \
+    # Remove composer cache and unnecessary files
+    rm -rf /root/.composer && \
+    # Remove test directories and documentation from vendor
+    find vendor -type d -name "tests" -o -name "Tests" -o -name "test" -o -name "Test" | xargs rm -rf && \
+    find vendor -type d -name "docs" -o -name "doc" -o -name "examples" | xargs rm -rf && \
+    find vendor -name "*.md" -o -name "*.txt" -o -name "*.xml" -o -name "*.yml" | xargs rm -f && \
+    find vendor -name "composer.json" -o -name "composer.lock" | xargs rm -f && \
+    # Remove .git directories if any
+    find vendor -name ".git" -type d | xargs rm -rf
+
+FROM base AS production
+
+ENV CFP_ENV=production
+
+# Copy application files
+COPY --from=composer-deps --chown=www-data:www-data /app /srv/application
+COPY . /srv/application
+
+COPY .docker/conf/nginx.conf /etc/nginx/nginx.conf
+COPY .docker/conf/fpm.conf /usr/local/etc/php-fpm.conf
+COPY .docker/bin/runit-nginx /etc/service/nginx/run
+COPY .docker/bin/runsvinit /sbin/runsvinit
+
+RUN mkdir -p /etc/service/fpm /etc/service/nginx && \
+    echo '#!/bin/sh' > /etc/service/fpm/run && \
+    echo 'exec php-fpm -FR' >> /etc/service/fpm/run && \
+    chmod +x /etc/service/*/run && \
+    chmod +x /sbin/runsvinit
 
 ENTRYPOINT ["/sbin/runsvinit"]
 EXPOSE 80
