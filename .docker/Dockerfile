@@ -50,14 +50,7 @@ COPY . .
 # Generate optimized autoloader and remove unnecessary files
 RUN composer dump-autoload --optimize --classmap-authoritative && \
     # Remove composer cache and unnecessary files
-    rm -rf /root/.composer && \
-    # Remove test directories and documentation from vendor
-    find vendor -type d -name "tests" -o -name "Tests" -o -name "test" -o -name "Test" | xargs rm -rf && \
-    find vendor -type d -name "docs" -o -name "doc" -o -name "examples" | xargs rm -rf && \
-    find vendor -name "*.md" -o -name "*.txt" -o -name "*.yml" | xargs rm -f && \
-    find vendor -name "composer.json" -o -name "composer.lock" | xargs rm -f && \
-    # Remove .git directories if any
-    find vendor -name ".git" -type d | xargs rm -rf
+    rm -rf /root/.composer
 
 FROM base AS production
 
