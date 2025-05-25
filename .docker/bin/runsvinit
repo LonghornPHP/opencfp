@@ -7,6 +7,8 @@ sv_stop() {
     done
 }
 
+chown -R nginx:nginx /srv/application/web/uploads /srv/application/cache/production /srv/application/log
+
 trap "sv_stop; exit" SIGTERM
 /sbin/runsvdir /etc/service &
 wait
