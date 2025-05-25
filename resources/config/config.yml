@@ -10,6 +10,7 @@ framework:
     handler_id: session.handler.native_file
   router:
     resource: '%kernel.project_dir%/resources/config/routing.yml'
+    default_uri: 'https://cfp.longhornphp.com'
 
 wouterj_eloquent:
   driver:   mysql
