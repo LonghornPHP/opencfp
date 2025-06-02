@@ -21,9 +21,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v1
-      - name: Remove HHVM
-        run: |
-          sudo apt-get remove -y hhvm
       - name: Setup PHP
         uses: shivammathur/setup-php@master
         with:
