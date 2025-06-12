@@ -62,6 +62,7 @@ COPY . /srv/application
 
 COPY .docker/conf/nginx.conf /etc/nginx/nginx.conf
 COPY .docker/conf/fpm.conf /usr/local/etc/php-fpm.conf
+COPY .docker/conf/php.ini ${PHP_INI_DIR}
 COPY .docker/bin/runit-nginx /etc/service/nginx/run
 COPY .docker/bin/runsvinit /sbin/runsvinit
 
