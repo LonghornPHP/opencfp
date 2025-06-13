@@ -37,12 +37,10 @@ RUN --mount=type=cache,target=/var/cache/apk \
         freetype \
         libjpeg-turbo \
         libwebp \
-        libavif \
     && docker-php-ext-configure gd \
         --with-freetype \
         --with-jpeg \
         --with-webp \
-        --with-avif \
     && docker-php-ext-install -j$(nproc) \
         pcntl \
         pdo_mysql \
