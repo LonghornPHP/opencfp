@@ -10,10 +10,18 @@ LABEL Description="This is the docker image for OpenCFP, a PHP-based conference 
       org.label-schema.version=$VERSION \
       org.label-schema.schema-version="1.0.0"
 
-RUN apk update && \
+RUN --mount=type=cache,target=/var/cache/apk \
+    apk update && \
     apk add --no-cache \
+    libpng \
+    libzip \
+    icu-libs \
+    freetype \
+    libjpeg-turbo \
+    libwebp \
+    bash \
     nginx \
-    runit && \
+    runit  && \
     mkdir /tmp/nginx
 
 FROM base as php-extensions
