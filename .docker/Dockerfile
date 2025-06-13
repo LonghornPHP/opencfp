@@ -16,13 +16,50 @@ RUN apk update && \
     runit && \
     mkdir /tmp/nginx
 
-RUN docker-php-ext-install pdo_mysql
+FROM base as php-extensions
+
+RUN --mount=type=cache,target=/var/cache/apk \
+    apk add --no-cache --virtual .build-deps \
+        ${PHPIZE_DEPS} \
+        linux-headers \
+        libpng-dev \
+        libzip-dev \
+        icu-dev \
+        freetype-dev \
+        libjpeg-turbo-dev \
+        libwebp-dev \
+        libavif-dev \
+        pcre-dev \
+    && apk add --no-cache \
+        libpng \
+        libzip \
+        icu-libs \
+        freetype \
+        libjpeg-turbo \
+        libwebp \
+        libavif \
+    && docker-php-ext-configure gd \
+        --with-freetype \
+        --with-jpeg \
+        --with-webp \
+        --with-avif \
+    && docker-php-ext-install -j$(nproc) \
+        pcntl \
+        pdo_mysql \
+        sockets \
+        gd \
+        zip \
+        bcmath \
+        intl \
+        exif \
+        opcache \
+    && apk del .build-deps
 
 ENV CFP_ENV ${CFP_ENV:-development}
 ENV CFP_DB_HOST ${CFP_DB_HOST:-"127.0.0.1"}
 ENV CFP_DB_PASS ${CFP_DB_PASS:-root}
 
-FROM base as composer-deps
+FROM php-extensions as composer-deps
 # Install composer
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 
@@ -55,6 +92,10 @@ RUN composer dump-autoload --optimize --classmap-authoritative && \
 FROM base AS production
 
 ENV CFP_ENV=production
+
+# Copy PHP extensions from builder
+COPY --from=php-extensions /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
+COPY --from=php-extensions /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
 
 # Copy application files
 COPY --from=composer-deps --chown=www-data:www-data /app /srv/application

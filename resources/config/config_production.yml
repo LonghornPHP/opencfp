@@ -1,6 +1,13 @@
 imports:
   - { resource: config.yml }
 
+monolog:
+  handlers:
+    opencfp:
+      type: stream
+      path: 'php://stderr'
+      level: '%log.level%'
+
 oneup_flysystem:
   adapters:
     uploads:
