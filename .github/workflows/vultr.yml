@@ -1,30 +1,188 @@
-name: Publish Longhorn PHP Open CFP Docker Image
+name: Vultr Deploy
 on:
   push:
-    branches:
-      - conf-specific
+    branches: [conf-specific]
+  workflow_dispatch:
+
+concurrency:
+  group: vultr-deploy
+  cancel-in-progress: false
+
 jobs:
-  deploy:
-    name: Deploy app
+  changes:
+    name: Detect changes
     runs-on: ubuntu-latest
+    outputs:
+      app: ${{ steps.filter.outputs.app }}
+      config: ${{ steps.filter.outputs.config }}
     steps:
-      - uses: actions/checkout@v3
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            app:
+              - 'src/**'
+              - 'web/**'
+              - 'resources/**'
+              - 'migrations/**'
+              - 'composer.json'
+              - 'composer.lock'
+              - 'package.json'
+              - 'webpack.mix.js'
+              - '.docker/**'
+              - '.github/workflows/vultr.yml'
+            config:
+              - '.github/config/opencfp-config.yml'
+
+  build:
+    name: Build & push image
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.app == 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
         with:
           registry: ord.vultrcr.com
           username: ${{ vars.VULTR_USERNAME }}
           password: ${{ secrets.VULTR_TOKEN }}
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Build and push
-        uses: docker/build-push-action@v6
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
         with:
+          context: .
+          file: .docker/Dockerfile
           push: true
-          tags: ord.vultrcr.com/longhorn/cfp:latest
+          tags: |
+            ord.vultrcr.com/longhorn/cfp:latest
+            ord.vultrcr.com/longhorn/cfp:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          file: .docker/Dockerfile
-          context: .
+          platforms: linux/amd64
+
+  config:
+    name: Sync rendered config to host
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.config == 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Render production config (substitute secrets)
+        run: |
+          cp .github/config/opencfp-config.yml opencfp-production.yml
+          sed -i 's|ENV_DB_PASSWORD|${{ secrets.OPENCFP_DB_PASSWORD }}|g' opencfp-production.yml
+          sed -i 's|ENV_SMTP_USERNAME|${{ vars.OPENCFP_SMTP_USERNAME }}|g' opencfp-production.yml
+          sed -i 's|ENV_SMTP_PASSWORD|${{ secrets.OPENCFP_SMTP_PASSWORD }}|g' opencfp-production.yml
+          sed -i 's|ENV_OPEN_CFP_CENTRAL_CLIENT_ID|${{ vars.OPENCFP_CENTRAL_CLIENT_ID }}|g' opencfp-production.yml
+          sed -i 's|ENV_OPEN_CFP_CENTRAL_CLIENT_SECRET|${{ secrets.OPENCFP_CENTRAL_CLIENT_SECRET }}|g' opencfp-production.yml
+        shell: bash
+
+      - name: Write SSH key
+        run: |
+          install -m 600 -D /dev/null ~/.ssh/id_ed25519
+          echo "${{ secrets.VULTR_SSH_KEY }}" > ~/.ssh/id_ed25519
+          ssh-keyscan -H ${{ secrets.VULTR_HOST }} > ~/.ssh/known_hosts
+        shell: bash
+
+      - name: SCP rendered config to host
+        run: |
+          scp -i ~/.ssh/id_ed25519 opencfp-production.yml \
+            linuxuser@"${{ secrets.VULTR_HOST }}":~/opencfp-production.yml
+        shell: bash
+
+  deploy:
+    name: Migrate, deploy, verify
+    runs-on: ubuntu-latest
+    needs: [changes, build, config]
+    if: |
+      always() && !cancelled() && !failure() && (
+        needs.build.result == 'success' || needs.config.result == 'success'
+      )
+    steps:
+      - name: Write SSH key
+        run: |
+          install -m 600 -D /dev/null ~/.ssh/id_ed25519
+          echo "${{ secrets.VULTR_SSH_KEY }}" > ~/.ssh/id_ed25519
+          ssh-keyscan -H ${{ secrets.VULTR_HOST }} > ~/.ssh/known_hosts
+        shell: bash
+
+      - name: Migrate (only if image changed)
+        if: needs.build.result == 'success'
+        env:
+          GIT_SHA: ${{ github.sha }}
+        run: |
+          ssh -i ~/.ssh/id_ed25519 linuxuser@"${{ secrets.VULTR_HOST }}" \
+            "docker run --rm --network host \
+              -v ~/opencfp-production.yml:/srv/application/config/production.yml:ro \
+              -e CFP_ENV=production \
+              ord.vultrcr.com/longhorn/cfp:${GIT_SHA} \
+              bin/console doctrine:migrations:migrate --env=production --no-interaction"
+        shell: bash
+
+      - name: Roll service & wait for convergence
+        env:
+          GIT_SHA: ${{ github.sha }}
+          BUILD_RAN: ${{ needs.build.result == 'success' }}
+        run: |
+          ssh -i ~/.ssh/id_ed25519 linuxuser@"${{ secrets.VULTR_HOST }}" bash -s -- "${GIT_SHA}" "${BUILD_RAN}" <<'ENDSSH'
+            set -euo pipefail
+            GIT_SHA="$1"
+            BUILD_RAN="$2"
+            IMAGE="ord.vultrcr.com/longhorn/cfp:${GIT_SHA}"
+
+            if [ "$BUILD_RAN" = "true" ]; then
+              echo "==> Rolling service to ${IMAGE}"
+              docker service update \
+                --image "$IMAGE" \
+                --with-registry-auth \
+                --update-failure-action rollback \
+                longhornphp_opencfp
+            else
+              echo "==> Config-only deploy: forcing task recreation to pick up new mounted config"
+              docker service update --force longhornphp_opencfp
+            fi
+
+            echo "==> Polling Swarm UpdateStatus"
+            TIMEOUT=300
+            ELAPSED=0
+            while [ $ELAPSED -lt $TIMEOUT ]; do
+              STATE=$(docker service inspect --format '{{.UpdateStatus.State}}' longhornphp_opencfp)
+              echo "==> UpdateStatus.State=${STATE} (elapsed ${ELAPSED}s)"
+              case "$STATE" in
+                completed) break ;;
+                rollback_completed)
+                  echo "::error::Deploy rolled back. New image failed healthcheck."
+                  docker service ps longhornphp_opencfp --no-trunc
+                  exit 1 ;;
+                paused)
+                  echo "::error::Deploy paused (manual intervention required)."
+                  exit 1 ;;
+              esac
+              sleep 5
+              ELAPSED=$((ELAPSED+5))
+            done
+            if [ $ELAPSED -ge $TIMEOUT ]; then
+              echo "::error::convergence timeout after ${TIMEOUT}s"
+              docker service ps longhornphp_opencfp --no-trunc
+              exit 1
+            fi
+
+            if [ "$BUILD_RAN" = "true" ]; then
+              echo "==> Verifying running tasks are on ${IMAGE}"
+              RUNNING=$(docker service ps longhornphp_opencfp \
+                --filter 'desired-state=running' --format '{{.Image}}' | sort -u)
+              if ! echo "$RUNNING" | grep -qx "$IMAGE"; then
+                echo "::error::tasks not on expected SHA. Running: $RUNNING"
+                exit 1
+              fi
+            fi
+            echo "==> Deploy complete"
+          ENDSSH
+        shell: bash
+
+      - name: Verify
+        run: |
+          curl --fail --silent --show-error --max-time 30 -o /dev/null \
+            -w "HTTP %{http_code} in %{time_total}s\n" \
+            https://cfp.longhornphp.com/
+        shell: bash

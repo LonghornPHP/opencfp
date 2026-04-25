@@ -1,0 +1,73 @@
+application:
+  title: "Longhorn PHP Conference 2025"
+  venue_image_path: https://lh3.googleusercontent.com/LXNS9pI8_2YMeZu1q9u0HpIHnvTi7Y9cViG_UQ9Yreh3pJrZg0SR12G-D-OIHUgJDioKAajJTNxzNe0-q1yeArhsSJICMToeHoN61j8837mYzbnq4aV6OUiuxH6iVjw_zEdXrBd-bpCBzzozfxEz2op8nTMfsgGbImCA4jh2hQnt0VXwujepMxYDdaE83AGesLeg-AXSWCPUsh6ZUjAaun5MMN9nP_c4sZG6kOuFdXrHsVnGUYc3fk7DiABqQ2PSroDOg_F8dToF15_tU6XPV6iSUl9P9OUNj1TorL4VWL-gq0hrvOjvSzttCf3e-NDUYMLlPJo6GkTJgFPIAQ_ibMWw4SwFEn7ja4B7P5kxvwIVbV0u4CR-eoy-xTwynGndEzIE-3Py045mb1E8sVqBZXakp9Z3mdi1REKLLWfGjz5o1FdfFAyArBJzJC0pJyI3q23IwMtET0UbseVEzdKvHGSIAXH1NChyG7OnGdyWThg-qgwZJlceFksUE1Q49k5xFFF1Cj8Dk3cSCb58Lfp5gerXEJORNYzQ3owvgAMMzzYQcdtZyNZ6e1qPhasgiK87vRo57r94g5WUef_hOhRbWaQ2NyVD7zaG3HsgOoKEIq9U7tcxTKbnvTnQuSgZSy5W3HIqg4mKtTF8RZ-MVluR8thGOIHjosDaYls34XZCl2Xx2kjEIwWcUCVP=w1299-h975-no
+  url: https://cfp.longhornphp.com
+  email: info@longhornphp.com
+  eventurl: https://www.longhornphp.com
+  event_location: Austin, TX
+  enddate: "2025-08-02 10:00:00"
+  show_submission_count: false
+  airport: AUS
+  arrival: 2025-10-22
+  departure: 2025-10-26
+  secure_ssl: false
+  online_conference: false
+  date_format: "F jS g:i a"
+  date_timezone: "America/Chicago"
+  coc_link: https://www.longhornphp.com/code-of-conduct/
+  user_image_size: 1024
+api:
+  enabled: true
+
+cache:
+  enabled: false
+
+database:
+  host: 10.3.96.3
+  database: opencfp
+  user: app
+  password: ENV_DB_PASSWORD
+
+log:
+  level: info
+
+mail:
+  host: smtp.mailgun.org
+  port: 587
+  username: ENV_SMTP_USERNAME
+  password: ENV_SMTP_PASSWORD
+  encryption: tls
+  auth_mode: ~
+
+talk:
+  categories:
+    api: APIs (Design, Tooling, etc.)
+    database: Database
+    development: Development
+    devops: DevOps (including CI/CD)
+    framework: Framework
+    javascript: JavaScript
+    altlang: Other Languages (not PHP or JS)
+    personal: Personal Skills
+    security: Security
+    testing: Testing
+    uiux: UI/UX
+    other: Other
+  levels:
+    entry: Entry level
+    mid: Intermediate
+    advanced: Advanced
+    all: Anyone
+  types:
+    talk: Talk (50 minutes including questions)
+    tutorial: Tutorial (3 hours)
+    allday: All-Day tutorial (6-7 hours)
+
+opencfpcentral:
+  sso: off
+  clientId: ENV_OPEN_CFP_CENTRAL_CLIENT_ID
+  clientSecret: ENV_OPEN_CFP_CENTRAL_CLIENT_SECRET
+  authorizeUrl: https://www.opencfpcentral.com/oauth/authorize?
+  redirectUri: https://cfp.longhornphp.com/sso/redirect
+  resourceUri: https://www.opencfpcentral.com/api/user
+  tokenUrl: https://www.opencfpcentral.com/oauth/token
