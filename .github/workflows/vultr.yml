@@ -113,6 +113,8 @@ jobs:
         run: |
           ssh -i ~/.ssh/id_ed25519 linuxuser@"${{ secrets.VULTR_HOST }}" \
             "docker run --rm --network host \
+              --entrypoint php \
+              -w /srv/application \
               -v ~/opencfp-production.yml:/srv/application/config/production.yml:ro \
               -e CFP_ENV=production \
               ewr.vultrcr.com/longhornphp/cfp:${GIT_SHA} \
