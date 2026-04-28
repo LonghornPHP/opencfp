@@ -1,15 +1,15 @@
 application:
-  title: "Longhorn PHP Conference 2025"
+  title: "Longhorn PHP Conference 2026"
   venue_image_path: https://lh3.googleusercontent.com/LXNS9pI8_2YMeZu1q9u0HpIHnvTi7Y9cViG_UQ9Yreh3pJrZg0SR12G-D-OIHUgJDioKAajJTNxzNe0-q1yeArhsSJICMToeHoN61j8837mYzbnq4aV6OUiuxH6iVjw_zEdXrBd-bpCBzzozfxEz2op8nTMfsgGbImCA4jh2hQnt0VXwujepMxYDdaE83AGesLeg-AXSWCPUsh6ZUjAaun5MMN9nP_c4sZG6kOuFdXrHsVnGUYc3fk7DiABqQ2PSroDOg_F8dToF15_tU6XPV6iSUl9P9OUNj1TorL4VWL-gq0hrvOjvSzttCf3e-NDUYMLlPJo6GkTJgFPIAQ_ibMWw4SwFEn7ja4B7P5kxvwIVbV0u4CR-eoy-xTwynGndEzIE-3Py045mb1E8sVqBZXakp9Z3mdi1REKLLWfGjz5o1FdfFAyArBJzJC0pJyI3q23IwMtET0UbseVEzdKvHGSIAXH1NChyG7OnGdyWThg-qgwZJlceFksUE1Q49k5xFFF1Cj8Dk3cSCb58Lfp5gerXEJORNYzQ3owvgAMMzzYQcdtZyNZ6e1qPhasgiK87vRo57r94g5WUef_hOhRbWaQ2NyVD7zaG3HsgOoKEIq9U7tcxTKbnvTnQuSgZSy5W3HIqg4mKtTF8RZ-MVluR8thGOIHjosDaYls34XZCl2Xx2kjEIwWcUCVP=w1299-h975-no
   url: https://cfp.longhornphp.com
   email: info@longhornphp.com
   eventurl: https://www.longhornphp.com
   event_location: Austin, TX
-  enddate: "2025-08-02 10:00:00"
+  enddate: "2026-07-01 10:00:00"
   show_submission_count: false
   airport: AUS
-  arrival: 2025-10-22
-  departure: 2025-10-26
+  arrival: 2026-10-14
+  departure: 2026-10-16
   secure_ssl: false
   online_conference: false
   date_format: "F jS g:i a"
@@ -41,6 +41,7 @@ mail:
 
 talk:
   categories:
+    ai: LLMs and AI
     api: APIs (Design, Tooling, etc.)
     database: Database
     development: Development
