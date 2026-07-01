@@ -5,7 +5,7 @@ application:
   email: info@longhornphp.com
   eventurl: https://www.longhornphp.com
   event_location: Austin, TX
-  enddate: "2026-07-01 10:00:00"
+  enddate: "2026-07-11 10:00:00"
   show_submission_count: false
   airport: AUS
   arrival: 2026-10-14
