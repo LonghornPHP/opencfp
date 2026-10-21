@@ -14,15 +14,15 @@ declare(strict_types=1);
 namespace OpenCFP\Test\Unit\Http\Action\Talk;
 
 use HTMLPurifier;
-use Localheinz\Test\Util\Helper;
+use Ergebnis\Test\Util\Helper;
 use OpenCFP\Domain\CallForPapers;
 use OpenCFP\Domain\Services;
 use OpenCFP\Http\Action\Talk\UpdateAction;
 use OpenCFP\Http\View;
 use PHPUnit\Framework;
 use Prophecy\Argument;
-use Swift_Mailer;
 use Symfony\Component\HttpFoundation;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing;
 
 final class UpdateActionTest extends Framework\TestCase
@@ -84,7 +84,7 @@ final class UpdateActionTest extends Framework\TestCase
             $this->prophesize(View\TalkHelper::class)->reveal(),
             $callForPapers->reveal(),
             $this->prophesize(HTMLPurifier::class)->reveal(),
-            $this->prophesize(Swift_Mailer::class)->reveal(),
+            $this->prophesize(MailerInterface::class)->reveal(),
             $this->prophesize(\Twig\Environment::class)->reveal(),
             $urlGenerator->reveal(),
             $applicationEmail,

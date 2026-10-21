@@ -28,7 +28,7 @@ final class ExceptionListenerTest extends WebTestCase
 
         $this->assertResponseStatusCode(HttpFoundation\Response::HTTP_NOT_FOUND, $response);
         $this->assertResponseHeader('application/json', 'Content-Type', $response);
-        $this->assertResponseBodyJson('{"error": "No route found for \\"GET /invalid/uri\\""}', $response);
+        $this->assertResponseBodyJson('{"error": "No route found for \"GET http://localhost/invalid/uri\""}', $response);
     }
 
     /**

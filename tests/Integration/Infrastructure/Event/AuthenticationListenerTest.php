@@ -37,7 +37,7 @@ final class AuthenticationListenerTest extends WebTestCase
     {
         $response = $this->get('/talk/create');
 
-        $url = self::$container->get('router')->generate('dashboard');
+        $url = self::getContainer()->get('router')->generate('dashboard');
 
         $this->assertRedirectResponseUrlEquals($url, $response);
     }
@@ -49,11 +49,11 @@ final class AuthenticationListenerTest extends WebTestCase
     {
         // Make sure the CFP is open
         $now           = new \DateTime();
-        $callForPapers = self::$container->get(CallForPapers::class);
+        $callForPapers = self::getContainer()->get(CallForPapers::class);
         $method        = new \ReflectionMethod(CallForPapers::class, 'setEndDate');
         $method->setAccessible(true);
         $method->invoke($callForPapers, new \DateTimeImmutable($now->format('M. jS, Y')));
-        self::$container->get('twig')->addGlobal('cfp_open', $callForPapers->isOpen());
+        self::getContainer()->get('twig')->addGlobal('cfp_open', $callForPapers->isOpen());
 
         /** @var Model\User $speaker */
         $speaker = factory(Model\User::class)->create()->first();
@@ -72,7 +72,7 @@ final class AuthenticationListenerTest extends WebTestCase
     {
         $response = $this->get('/reviewer/');
 
-        $url = self::$container->get('router')->generate('dashboard');
+        $url = self::getContainer()->get('router')->generate('dashboard');
 
         $this->assertRedirectResponseUrlEquals($url, $response);
     }
@@ -89,7 +89,7 @@ final class AuthenticationListenerTest extends WebTestCase
             ->asLoggedInSpeaker($speaker->id)
             ->get('/reviewer/');
 
-        $url = self::$container->get('router')->generate('dashboard');
+        $url = self::getContainer()->get('router')->generate('dashboard');
 
         $this->assertRedirectResponseUrlEquals($url, $response);
     }
@@ -116,7 +116,7 @@ final class AuthenticationListenerTest extends WebTestCase
     {
         $response = $this->get('/admin/');
 
-        $url = self::$container->get('router')->generate('dashboard');
+        $url = self::getContainer()->get('router')->generate('dashboard');
 
         $this->assertRedirectResponseUrlEquals($url, $response);
     }
@@ -133,7 +133,7 @@ final class AuthenticationListenerTest extends WebTestCase
             ->asLoggedInSpeaker($speaker->id)
             ->get('/admin/');
 
-        $url = self::$container->get('router')->generate('dashboard');
+        $url = self::getContainer()->get('router')->generate('dashboard');
 
         $this->assertRedirectResponseUrlEquals($url, $response);
     }

@@ -17,7 +17,7 @@ use OpenCFP\Domain\Services\Authentication;
 use OpenCFP\Infrastructure\Auth\RoleAccess;
 use OpenCFP\Infrastructure\Auth\SpeakerAccess;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -46,8 +46,12 @@ class AuthenticationListener implements EventSubscriberInterface
         ];
     }
 
-    public function onKernelRequest(GetResponseEvent $event)
+    public function onKernelRequest(RequestEvent $event)
     {
+        if (!$event->isMainRequest()) {
+            return;
+        }
+
         $uri = $event->getRequest()->getRequestUri();
 
         if (\preg_match('/^\/(talk|profile)/', $uri)) {

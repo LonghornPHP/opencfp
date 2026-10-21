@@ -15,7 +15,7 @@ namespace OpenCFP\Test\Unit\Infrastructure\Auth;
 
 use Cartalyst\Sentinel\Sentinel;
 use Cartalyst\Sentinel\Users\UserInterface as SentinelUserInterface;
-use Localheinz\Test\Util\Helper;
+use Ergebnis\Test\Util\Helper;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use OpenCFP\Domain\Services\AccountManagement;
@@ -125,7 +125,7 @@ final class SentinelAuthenticationTest extends \PHPUnit\Framework\TestCase
     public function userThrowsCorrectErrorWhenNotFound()
     {
         $sentinel = Mockery::mock(Sentinel::class);
-        $sentinel->shouldReceive('getUser')->andReturn(false);
+        $sentinel->shouldReceive('getUser')->andReturn(null);
         $account = Mockery::mock(AccountManagement::class);
         $auth    = new SentinelAuthentication($sentinel, $account);
         $this->expectException(NotAuthenticatedException::class);
@@ -165,7 +165,7 @@ final class SentinelAuthenticationTest extends \PHPUnit\Framework\TestCase
         $user     = Mockery::mock(\Cartalyst\Sentinel\Users\UserInterface::class);
         $sentinel = Mockery::mock(Sentinel::class);
         $account  = Mockery::mock(AccountManagement::class);
-        $sentinel->shouldReceive('logout')->andReturn($user);
+        $sentinel->shouldReceive('logout')->andReturn(true);
         $auth = new SentinelAuthentication($sentinel, $account);
         $this->assertTrue($auth->logout());
     }

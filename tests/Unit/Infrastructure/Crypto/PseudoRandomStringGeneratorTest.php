@@ -22,7 +22,7 @@ final class PseudoRandomStringGeneratorTest extends \PHPUnit\Framework\TestCase
      */
     private $sut;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->sut = new PseudoRandomStringGenerator();
     }

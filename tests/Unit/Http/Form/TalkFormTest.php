@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace OpenCFP\Test\Unit\Http\Form;
 
-use Localheinz\Test\Util\Helper;
+use Ergebnis\Test\Util\Helper;
 
 final class TalkFormTest extends \PHPUnit\Framework\TestCase
 {
@@ -21,7 +21,7 @@ final class TalkFormTest extends \PHPUnit\Framework\TestCase
 
     private $purifier;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->purifier = new \HTMLPurifier();
     }

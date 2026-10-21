@@ -12,6 +12,8 @@ opencfp.iml
 .buildpath
 .php_cs
 .php_cs.cache
+.php-cs-fixer.cache
+.phpunit.result.cache
 .project
 .settings
 composer.phar

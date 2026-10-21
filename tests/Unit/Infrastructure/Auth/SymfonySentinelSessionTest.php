@@ -13,9 +13,12 @@ declare(strict_types=1);
 
 namespace OpenCFP\Test\Unit\Infrastructure\Auth;
 
-use Localheinz\Test\Util\Helper;
+use Ergebnis\Test\Util\Helper;
 use Mockery;
 use OpenCFP\Infrastructure\Auth\SymfonySentinelSession;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 final class SymfonySentinelSessionTest extends \PHPUnit\Framework\TestCase
 {
@@ -38,7 +41,7 @@ final class SymfonySentinelSessionTest extends \PHPUnit\Framework\TestCase
         $key   = 'foo';
         $value = 'bar';
 
-        $session = $this->getSessionMock();
+        [$session, $requestStack] = $this->getSessionMock();
 
         $session
             ->expects($this->once())
@@ -49,7 +52,7 @@ final class SymfonySentinelSessionTest extends \PHPUnit\Framework\TestCase
             );
 
         $sentinelSession = new SymfonySentinelSession(
-            $session,
+            $requestStack,
             $key
         );
 
@@ -64,7 +67,7 @@ final class SymfonySentinelSessionTest extends \PHPUnit\Framework\TestCase
         $key   = 'foo';
         $value = 'bar';
 
-        $session = $this->getSessionMock();
+        [$session, $requestStack] = $this->getSessionMock();
 
         $session
             ->expects($this->once())
@@ -73,7 +76,7 @@ final class SymfonySentinelSessionTest extends \PHPUnit\Framework\TestCase
             ->willReturn($value);
 
         $sentinelSession = new SymfonySentinelSession(
-            $session,
+            $requestStack,
             $key
         );
 
@@ -87,7 +90,7 @@ final class SymfonySentinelSessionTest extends \PHPUnit\Framework\TestCase
     {
         $key = 'foo';
 
-        $session = $this->getSessionMock();
+        [$session, $requestStack] = $this->getSessionMock();
 
         $session
             ->expects($this->once())
@@ -95,15 +98,26 @@ final class SymfonySentinelSessionTest extends \PHPUnit\Framework\TestCase
             ->with($this->identicalTo($key));
 
         $sentinelSession = new SymfonySentinelSession(
-            $session,
+            $requestStack,
             $key
         );
 
         $sentinelSession->forget();
     }
 
-    private function getSessionMock()
+    /**
+     * @return array{0: SessionInterface, 1: RequestStack}
+     */
+    private function getSessionMock(): array
     {
-        return $this->getMockBuilder(\Symfony\Component\HttpFoundation\Session\SessionInterface::class)->getMock();
+        $session = $this->getMockBuilder(SessionInterface::class)->getMock();
+
+        $request = new Request();
+        $request->setSession($session);
+
+        $requestStack = new RequestStack();
+        $requestStack->push($request);
+
+        return [$session, $requestStack];
     }
 }

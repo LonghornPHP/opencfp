@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace OpenCFP\Test\Unit\Infrastructure\Auth;
 
 use Cartalyst\Sentinel\Sentinel;
-use Localheinz\Test\Util\Helper;
+use Ergebnis\Test\Util\Helper;
 use OpenCFP\Domain\Model\User;
 use OpenCFP\Domain\Repository\UserRepository;
 use OpenCFP\Domain\Services\IdentityProvider;

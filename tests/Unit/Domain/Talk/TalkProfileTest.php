@@ -15,7 +15,7 @@ namespace OpenCFP\Test\Unit\Domain\Talk;
 
 use Illuminate\Database\Eloquent;
 use Illuminate\Support\Collection;
-use Localheinz\Test\Util\Helper;
+use Ergebnis\Test\Util\Helper;
 use Mockery as m;
 use OpenCFP\Domain\Model\Favorite;
 use OpenCFP\Domain\Model\Talk;

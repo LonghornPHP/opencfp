@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace OpenCFP\Test\Unit\Http\Action\Security;
 
-use Localheinz\Test\Util\Helper;
+use Ergebnis\Test\Util\Helper;
 use OpenCFP\Domain\Services;
 use OpenCFP\Http\Action\Security\LogInAction;
 use OpenCFP\Infrastructure\Auth\UserInterface;

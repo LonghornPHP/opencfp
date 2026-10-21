@@ -33,7 +33,7 @@ final class SpeakersTest extends \PHPUnit\Framework\TestCase
     /** @var IdentityProvider | MockInterface */
     private $identityProvider;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->identityProvider = m::mock(\OpenCFP\Domain\Services\IdentityProvider::class);
 

@@ -24,7 +24,7 @@ final class ForgotControllerTest extends WebTestCase implements TransactionalTes
      */
     public function sendResetDisplaysCorrectMessage()
     {
-        self::$container->get(AccountManagement::class)
+        self::getContainer()->get(AccountManagement::class)
             ->create('someone@example.com', 'some password');
 
         $client = $this->createClient();
@@ -38,7 +38,7 @@ final class ForgotControllerTest extends WebTestCase implements TransactionalTes
         $client->followRedirects();
         $client->submit($form);
 
-        $this->assertContains(
+        $this->assertStringContainsString(
             'If your email was valid, we sent a link to reset your password to',
             $client->getResponse()->getContent()
         );
@@ -60,7 +60,7 @@ final class ForgotControllerTest extends WebTestCase implements TransactionalTes
         $client->followRedirects();
         $client->submit($form);
 
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Please enter a properly formatted email address',
             $client->getResponse()->getContent()
         );
@@ -82,7 +82,7 @@ final class ForgotControllerTest extends WebTestCase implements TransactionalTes
         $client->followRedirects();
         $client->submit($form);
 
-        $this->assertContains(
+        $this->assertStringContainsString(
             'If your email was valid, we sent a link to reset your password to',
             $client->getResponse()->getContent()
         );

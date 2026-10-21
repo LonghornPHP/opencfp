@@ -54,7 +54,7 @@ trait ResponseHelper
     {
         $haystack = $response->getContent();
 
-        $this->assertContains($needle, $haystack, \sprintf(
+        $this->assertStringContainsString($needle, $haystack, \sprintf(
             'Failed asserting that the response body "%s" contains "%s".',
             $haystack,
             $needle
@@ -65,7 +65,7 @@ trait ResponseHelper
     {
         $haystack = $response->getContent();
 
-        $this->assertNotContains($needle, $haystack, \sprintf(
+        $this->assertStringNotContainsString($needle, $haystack, \sprintf(
             'Failed asserting that the response body "%s" does not contain "%s".',
             $haystack,
             $needle
@@ -121,7 +121,7 @@ trait ResponseHelper
         /** @var HttpFoundation\RedirectResponse $response */
         $actual = $response->getTargetUrl();
 
-        $this->assertContains($expected, $actual, \sprintf(
+        $this->assertStringContainsString($expected, $actual, \sprintf(
             'Failed asserting that the redirect URL "%s" equals "%s".',
             $actual,
             $expected

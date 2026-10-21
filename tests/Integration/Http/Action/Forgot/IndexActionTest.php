@@ -24,8 +24,8 @@ final class IndexActionTest extends WebTestCase
     {
         $response = $this->get('/forgot');
 
-        $this->assertContains('<form id="forgot"', $response->getContent());
-        $this->assertContains('<input type="hidden" id="forgot_form__token"', $response->getContent());
-        $this->assertContains('<input type="email" id="forgot_form_email"', $response->getContent());
+        $this->assertStringContainsString('<form id="forgot"', $response->getContent());
+        $this->assertStringContainsString('<input type="hidden" id="forgot_form__token"', $response->getContent());
+        $this->assertStringContainsString('<input type="email" id="forgot_form_email"', $response->getContent());
     }
 }

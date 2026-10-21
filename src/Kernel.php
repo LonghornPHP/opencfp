@@ -21,10 +21,8 @@ use Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle;
 use Symfony\Bundle\DebugBundle\DebugBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\MonologBundle\MonologBundle;
-use Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle;
 use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Bundle\WebProfilerBundle\WebProfilerBundle;
-use Symfony\Bundle\WebServerBundle\WebServerBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel as SymfonyKernel;
@@ -33,21 +31,13 @@ use WouterJ\EloquentBundle\WouterJEloquentBundle;
 
 final class Kernel extends SymfonyKernel
 {
-    public function __construct(string $environment, bool $debug)
-    {
-        $this->name = 'OpenCFP';
-
-        parent::__construct($environment, $debug);
-    }
-
-    public function registerBundles()
+    public function registerBundles(): iterable
     {
         $bundles = [
             new FrameworkBundle(),
             new SensioFrameworkExtraBundle(),
             new MonologBundle(),
             new TwigBundle(),
-            new SwiftmailerBundle(),
             new WouterJEloquentBundle(),
             new OneupFlysystemBundle(),
             new DoctrineBundle(),
@@ -59,14 +49,13 @@ final class Kernel extends SymfonyKernel
         }
 
         if ($this->getEnvironment() === Environment::TYPE_DEVELOPMENT) {
-            $bundles[] = new WebServerBundle();
             $bundles[] = new WebProfilerBundle();
         }
 
         return $bundles;
     }
 
-    public function registerContainerConfiguration(LoaderInterface $loader)
+    public function registerContainerConfiguration(LoaderInterface $loader): void
     {
         $loader->load(function (ContainerBuilder $container) {
             $this->bindConfiguration($container, $this->loadConfigurationFor($this->getEnvironment()));
@@ -75,17 +64,17 @@ final class Kernel extends SymfonyKernel
         $loader->load($this->getProjectDir() . '/resources/config/config_' . $this->getEnvironment() . '.yml');
     }
 
-    public function getCacheDir()
+    public function getCacheDir(): string
     {
         return $this->getProjectDir() . '/cache/' . $this->getEnvironment();
     }
 
-    public function getLogDir()
+    public function getLogDir(): string
     {
         return $this->getProjectDir() . '/log';
     }
 
-    protected function build(ContainerBuilder $container)
+    protected function build(ContainerBuilder $container): void
     {
         if ($this->getEnvironment() === Environment::TYPE_TESTING) {
             $container->addCompilerPass(new TestingPass());
@@ -120,10 +109,41 @@ final class Kernel extends SymfonyKernel
     private function bindConfiguration(ContainerBuilder $container, array $config)
     {
         $container->setParameter('config.application', $config['application']);
+        $container->setParameter('mail.dsn', $this->mailDsn($config['mail'] ?? []));
 
         foreach ($config as $groupName => $groupConfig) {
             $this->bindGroupConfiguration($container, $groupName, $groupConfig);
         }
+    }
+
+    /**
+     * Mail settings are optional, so the transport has to fall back to a null
+     * transport instead of building a DSN out of null parameters.
+     */
+    private function mailDsn(array $mail): string
+    {
+        if (empty($mail['host'])) {
+            return 'null://null';
+        }
+
+        $auth = '';
+
+        if (!empty($mail['username'])) {
+            $auth = \rawurlencode((string) $mail['username'])
+                . ':' . \rawurlencode((string) ($mail['password'] ?? ''))
+                . '@';
+        }
+
+        return \str_replace(
+            '%',
+            '%%',
+            \sprintf(
+                'smtp://%s%s:%s',
+                $auth,
+                $mail['host'],
+                $mail['port'] ?: 25
+            )
+        );
     }
 
     private function bindGroupConfiguration(ContainerBuilder $container, string $groupName, $groupConfig)

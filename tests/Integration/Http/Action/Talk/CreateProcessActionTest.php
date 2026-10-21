@@ -27,8 +27,7 @@ final class CreateProcessActionTest extends WebTestCase implements Transactional
         /** @var Model\User $user */
         $user = factory(Model\User::class)->create()->first();
 
-        $csrfToken = self::$container->get('security.csrf.token_manager')
-            ->getToken('edit_talk');
+        $csrfToken = $this->csrfToken('edit_talk');
 
         $response = $this
             ->asLoggedInSpeaker($user->id)
@@ -56,9 +55,7 @@ final class CreateProcessActionTest extends WebTestCase implements Transactional
         /** @var Model\User $user */
         $user = factory(Model\User::class)->create()->first();
 
-        $csrfToken = self::$container->get('security.csrf.token_manager')
-            ->getToken('speaker_talk')
-            ->getValue();
+        $csrfToken = $this->csrfToken('speaker_talk');
 
         $response = $this
             ->asLoggedInSpeaker($user->id)
@@ -81,9 +78,7 @@ final class CreateProcessActionTest extends WebTestCase implements Transactional
         /** @var Model\User $user */
         $user = factory(Model\User::class)->create()->first();
 
-        $csrfToken = self::$container->get('security.csrf.token_manager')
-            ->getToken('speaker_talk')
-            ->getValue();
+        $csrfToken = $this->csrfToken('speaker_talk');
 
         $response = $this
             ->asLoggedInSpeaker($user->id)
@@ -131,8 +126,7 @@ final class CreateProcessActionTest extends WebTestCase implements Transactional
         // And the confirmation cannot be sent
         // Then we add an error message to the session
         $speaker   = factory(Model\User::class)->create()->first();
-        $csrfToken = self::$container->get('security.csrf.token_manager')
-            ->getToken('speaker_talk');
+        $csrfToken = $this->csrfToken('speaker_talk');
         $response = $this
             ->asLoggedInSpeaker($speaker->id)
             ->callForPapersIsOpen()

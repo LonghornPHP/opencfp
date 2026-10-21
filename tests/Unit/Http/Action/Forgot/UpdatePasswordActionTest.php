@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace OpenCFP\Test\Unit\Http\Action\Forgot;
 
-use Localheinz\Test\Util\Helper;
+use Ergebnis\Test\Util\Helper;
 use OpenCFP\Domain\Services;
 use OpenCFP\Http\Action\Forgot\UpdatePasswordAction;
 use OpenCFP\Infrastructure\Auth;
@@ -43,7 +43,8 @@ final class UpdatePasswordActionTest extends Framework\TestCase
 
         $resetForm
             ->handleRequest(Argument::exact($request))
-            ->shouldBeCalled();
+            ->shouldBeCalled()
+            ->willReturn($resetForm->reveal());
 
         $resetForm
             ->isSubmitted()
@@ -95,7 +96,8 @@ final class UpdatePasswordActionTest extends Framework\TestCase
 
         $resetForm
             ->handleRequest(Argument::exact($request))
-            ->shouldBeCalled();
+            ->shouldBeCalled()
+            ->willReturn($resetForm->reveal());
 
         $resetForm
             ->isSubmitted()
@@ -159,7 +161,8 @@ final class UpdatePasswordActionTest extends Framework\TestCase
 
         $resetForm
             ->handleRequest(Argument::exact($request))
-            ->shouldBeCalled();
+            ->shouldBeCalled()
+            ->willReturn($resetForm->reveal());
 
         $resetForm
             ->isSubmitted()
@@ -247,7 +250,8 @@ final class UpdatePasswordActionTest extends Framework\TestCase
 
         $resetForm
             ->handleRequest(Argument::exact($request))
-            ->shouldBeCalled();
+            ->shouldBeCalled()
+            ->willReturn($resetForm->reveal());
 
         $resetForm
             ->isSubmitted()
@@ -341,7 +345,8 @@ final class UpdatePasswordActionTest extends Framework\TestCase
 
         $resetForm
             ->handleRequest($request)
-            ->shouldBeCalled();
+            ->shouldBeCalled()
+            ->willReturn($resetForm->reveal());
         $resetForm
             ->isSubmitted()
             ->shouldBeCalled()
@@ -442,7 +447,8 @@ final class UpdatePasswordActionTest extends Framework\TestCase
 
         $resetForm
             ->handleRequest($request)
-            ->shouldBeCalled();
+            ->shouldBeCalled()
+            ->willReturn($resetForm->reveal());
 
         $resetForm
             ->isSubmitted()

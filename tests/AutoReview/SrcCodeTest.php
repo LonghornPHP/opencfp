@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace OpenCFP\Test\AutoReview;
 
-use Localheinz\Classy;
-use Localheinz\Test\Util\Helper;
+use Ergebnis\Classy;
+use Ergebnis\Test\Util\Helper;
 use PHPUnit\Framework;
 use Symfony\Component\HttpFoundation;
 

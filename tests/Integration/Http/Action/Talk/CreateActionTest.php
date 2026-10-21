@@ -30,14 +30,14 @@ final class CreateActionTest extends WebTestCase implements TransactionalTestCas
         // for the current date. `isCfpOpen` now uses 11:59pm current date.
         $now = new \DateTime();
 
-        $callForPapers = self::$container->get(CallForPapers::class);
+        $callForPapers = self::getContainer()->get(CallForPapers::class);
 
         $method = new \ReflectionMethod(CallForPapers::class, 'setEndDate');
 
         $method->setAccessible(true);
         $method->invoke($callForPapers, new \DateTimeImmutable($now->format('M. jS, Y')));
 
-        self::$container->get('twig')->addGlobal('cfp_open', $callForPapers->isOpen());
+        self::getContainer()->get('twig')->addGlobal('cfp_open', $callForPapers->isOpen());
 
         /** @var Model\User $speaker */
         $speaker = factory(Model\User::class)->create()->first();

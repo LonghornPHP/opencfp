@@ -11,32 +11,34 @@ declare(strict_types=1);
  * @see https://github.com/opencfp/opencfp
  */
 
+use Illuminate\Container\Container;
 use Illuminate\Database\Eloquent\Factory;
 
-if (!\function_exists('factory')) {
+if (!\function_exists('app')) {
     /**
-     * Create a model factory builder for a given class, name, and amount.
+     * Minimal service locator for laravel/legacy-factories, whose factory()
+     * helper resolves the factory through Laravel's app() helper.
      *
-     * @param  dynamic  class|class,name|class,amount|class,name,amount
+     * @param null|string $abstract
      *
-     * @return \Illuminate\Database\Eloquent\FactoryBuilder
+     * @return mixed
      */
-    function factory()
+    function app($abstract = null)
     {
-        $faker = \Faker\Factory::create();
+        static $container;
 
-        $factory = Factory::construct($faker, __DIR__ . '/../factories');
+        if ($container === null) {
+            $container = new Container();
 
-        $arguments = \func_get_args();
-
-        if (isset($arguments[1]) && \is_string($arguments[1])) {
-            return $factory->of($arguments[0], $arguments[1])->times($arguments[2] ?? null);
+            $container->singleton(Factory::class, static function () {
+                return Factory::construct(\Faker\Factory::create(), __DIR__ . '/../factories');
+            });
         }
 
-        if (isset($arguments[1])) {
-            return $factory->of($arguments[0])->times($arguments[1]);
+        if ($abstract === null) {
+            return $container;
         }
 
-        return $factory->of($arguments[0]);
+        return $container->make($abstract);
     }
 }

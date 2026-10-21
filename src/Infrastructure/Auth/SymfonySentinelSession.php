@@ -14,24 +14,25 @@ declare(strict_types=1);
 namespace OpenCFP\Infrastructure\Auth;
 
 use Cartalyst\Sentinel\Sessions\SessionInterface as SentinelSessionInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\SessionInterface as SymfonySessionInterface;
 
 final class SymfonySentinelSession implements SentinelSessionInterface
 {
     /**
-     * @var SymfonySessionInterface
+     * @var RequestStack
      */
-    private $session;
+    private $requestStack;
 
     /**
      * @var string
      */
     private $key;
 
-    public function __construct(SymfonySessionInterface $session, $key = null)
+    public function __construct(RequestStack $requestStack, $key = null)
     {
-        $this->session = $session;
-        $this->key     = $key ?: 'cartalyst_sentinel';
+        $this->requestStack = $requestStack;
+        $this->key          = $key ?: 'cartalyst_sentinel';
     }
 
     /**
@@ -39,9 +40,9 @@ final class SymfonySentinelSession implements SentinelSessionInterface
      *
      * @param mixed $value
      */
-    public function put($value)
+    public function put($value): void
     {
-        $this->session->set($this->key, $value);
+        $this->session()->set($this->key, $value);
     }
 
     /**
@@ -51,14 +52,19 @@ final class SymfonySentinelSession implements SentinelSessionInterface
      */
     public function get()
     {
-        return $this->session->get($this->key);
+        return $this->session()->get($this->key);
     }
 
     /**
      * Removes the Sentinel session.
      */
-    public function forget()
+    public function forget(): void
     {
-        $this->session->remove($this->key);
+        $this->session()->remove($this->key);
+    }
+
+    private function session(): SymfonySessionInterface
+    {
+        return $this->requestStack->getSession();
     }
 }

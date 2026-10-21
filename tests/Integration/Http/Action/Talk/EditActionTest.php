@@ -31,7 +31,7 @@ final class EditActionTest extends WebTestCase implements TransactionalTestCase
         /** @var User $speaker */
         $speaker = $talk->speaker()->first();
 
-        $csrfToken = self::$container->get('security.csrf.token_manager')->getToken('edit_talk');
+        $csrfToken = $this->csrfToken('edit_talk');
 
         $response = $this
             ->asLoggedInSpeaker($speaker->id)
@@ -40,8 +40,8 @@ final class EditActionTest extends WebTestCase implements TransactionalTestCase
 
         $this->assertResponseIsRedirect($response);
         $this->assertResponseBodyNotContains('Edit Your Talk', $response);
-        $this->assertSessionHasFlashMessage('error', self::$container->get('session'));
-        $this->assertSessionHasFlashMessage('You cannot edit talks once the call for papers has ended', self::$container->get('session'));
+        $this->assertSessionHasFlashMessage('error', $this->session());
+        $this->assertSessionHasFlashMessage('You cannot edit talks once the call for papers has ended', $this->session());
     }
 
     /**
@@ -90,9 +90,7 @@ final class EditActionTest extends WebTestCase implements TransactionalTestCase
         /** @var Talk $talk */
         $talk = factory(Talk::class, 1)->create(['user_id' => $speaker->id])->first();
 
-        $csrfToken = self::$container->get('security.csrf.token_manager')
-            ->getToken('edit_talk')
-            ->getValue();
+        $csrfToken = $this->csrfToken('edit_talk');
 
         $response = $this
             ->asLoggedInSpeaker($speaker->id)

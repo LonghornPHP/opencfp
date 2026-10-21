@@ -104,5 +104,7 @@ EOF
             $email,
             $roleName
         ));
+
+        return 0;
     }
 }

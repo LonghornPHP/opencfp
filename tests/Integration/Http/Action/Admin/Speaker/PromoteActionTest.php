@@ -29,9 +29,7 @@ final class PromoteActionTest extends WebTestCase implements TransactionalTestCa
 
         /** @var Model\User $admin */
         $admin     = factory(Model\User::class, 1)->create()->first();
-        $csrfToken = self::$container->get('security.csrf.token_manager')
-            ->getToken('admin_speaker_promote')
-            ->getValue();
+        $csrfToken = $this->csrfToken('admin_speaker_promote');
 
         $response = $this
             ->asAdmin($admin->id)
@@ -70,13 +68,11 @@ final class PromoteActionTest extends WebTestCase implements TransactionalTestCa
         $speaker = factory(Model\User::class, 1)->create()->first();
 
         /** @var Services\AccountManagement $accountManagement */
-        $accountManagement = self::$container->get(Services\AccountManagement::class);
+        $accountManagement = self::getContainer()->get(Services\AccountManagement::class);
 
         $accountManagement ->promoteToAdmin($speaker->email);
 
-        $csrfToken = self::$container->get('security.csrf.token_manager')
-            ->getToken('admin_speaker_promote')
-            ->getValue();
+        $csrfToken = $this->csrfToken('admin_speaker_promote');
 
         $response = $this
             ->asAdmin($admin->id)
@@ -108,9 +104,7 @@ final class PromoteActionTest extends WebTestCase implements TransactionalTestCa
         /** @var Model\User $speaker */
         $speaker = factory(Model\User::class, 1)->create()->first();
 
-        $csrfToken = self::$container->get('security.csrf.token_manager')
-            ->getToken('admin_speaker_promote')
-            ->getValue();
+        $csrfToken = $this->csrfToken('admin_speaker_promote');
 
         $response = $this
             ->asAdmin($admin->id)

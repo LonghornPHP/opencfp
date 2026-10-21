@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace OpenCFP\Test\Unit\Infrastructure\CacheWarmer;
 
-use Localheinz\Test\Util\Helper;
+use Ergebnis\Test\Util\Helper;
 use OpenCFP\Infrastructure\CacheWarmer\HtmlPurifierWarmer;
 use PHPUnit\Framework;
 use Symfony\Component\Filesystem;

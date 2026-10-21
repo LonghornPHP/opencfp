@@ -34,7 +34,7 @@ final class SsoActionTest extends Framework\TestCase
 
     private $authorizeUrl;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->urlGenerator = $this->prophesize(Routing\Generator\UrlGeneratorInterface::class);
@@ -62,7 +62,7 @@ final class SsoActionTest extends Framework\TestCase
         );
         $response = $centralAction($this->request->reveal());
         $needle   = 'Redirecting to /dashboard';
-        $this->assertContains($needle, $response->getContent());
+        $this->assertStringContainsString($needle, $response->getContent());
     }
 
     /**
@@ -81,7 +81,7 @@ final class SsoActionTest extends Framework\TestCase
 
         $this->assertSame(HttpFoundation\Response::HTTP_FOUND, $response->getStatusCode());
         $needle = "Redirecting to {$this->authorizeUrl}client_id={$this->clientId}&amp;redirect_uri=%2Fredirect";
-        $this->assertContains($needle, $response->getContent());
+        $this->assertStringContainsString($needle, $response->getContent());
     }
 
     private function createAuthenticationDouble(bool $isAuthenticated)

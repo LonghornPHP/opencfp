@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace OpenCFP\Test\Unit\Http\Action\Profile;
 
 use HTMLPurifier;
-use Localheinz\Test\Util\Helper;
+use Ergebnis\Test\Util\Helper;
 use OpenCFP\Domain\Services;
 use OpenCFP\Http\Action\Profile\ProcessAction;
 use OpenCFP\Infrastructure\Auth;

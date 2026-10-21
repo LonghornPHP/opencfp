@@ -15,8 +15,10 @@ services:
 
 framework:
   session:
-    storage_id: session.storage.mock_file
+    storage_factory_id: session.storage.factory.mock_file
   test: ~
+  mailer:
+    dsn: 'null://null'
 
 oneup_flysystem:
   adapters:
@@ -27,9 +29,6 @@ oneup_flysystem:
     uploads:
       adapter: uploads
       alias: upload_filesystem
-
-swiftmailer:
-  disable_delivery: true
 
 doctrine:
   dbal:
@@ -43,5 +42,5 @@ doctrine:
     mappings:
       OpenCFP\Domain\Entity:
         type: annotation
-        dir: "%kernel.root_dir%/../src/Domain/Entity"
+        dir: "%kernel.project_dir%/src/Domain/Entity"
         prefix: OpenCFP\Domain\Entity

@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace OpenCFP\Test\Unit\Http\Action\Reviewer\Talk;
 
-use Localheinz\Test\Util\Helper;
+use Ergebnis\Test\Util\Helper;
 use OpenCFP\Domain\Talk;
 use OpenCFP\Http\Action\Reviewer\Talk\ViewAction;
 use PHPUnit\Framework;

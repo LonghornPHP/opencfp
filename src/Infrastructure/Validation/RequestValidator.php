@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace OpenCFP\Infrastructure\Validation;
 
+use Illuminate\Support\Arr;
 use Illuminate\Validation\Factory;
 use OpenCFP\Domain\ValidationException;
 use Symfony\Component\HttpFoundation\Request;
@@ -42,7 +43,7 @@ class RequestValidator
         $validator = $this->factory->make($data, $rules);
 
         if ($validator->fails()) {
-            throw ValidationException::withErrors(array_flatten($validator->errors()->toArray()));
+            throw ValidationException::withErrors(Arr::flatten($validator->errors()->toArray()));
         }
     }
 }
