@@ -48,10 +48,13 @@ jobs:
           username: ${{ vars.VULTR_USERNAME }}
           password: ${{ secrets.VULTR_TOKEN }}
       - uses: docker/setup-buildx-action@v3
+      # Takedown: the production service runs .docker/Dockerfile.maintenance, a
+      # plain nginx image with a static 503 page and no PHP runtime. The PHP 7
+      # application image is intentionally not built or deployed here.
       - uses: docker/build-push-action@v6
         with:
           context: .
-          file: .docker/Dockerfile
+          file: .docker/Dockerfile.maintenance
           push: true
           tags: |
             ewr.vultrcr.com/longhornphp/cfp:latest
@@ -59,6 +62,21 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           platforms: linux/amd64
+
+      - name: Assert image ships no PHP runtime
+        run: |
+          set -euo pipefail
+          IMAGE=ewr.vultrcr.com/longhornphp/cfp:${GITHUB_SHA}
+          docker pull "$IMAGE"
+          # Fails (exit 1) if any PHP binary is present in the image.
+          if docker run --rm --entrypoint sh "$IMAGE" -c \
+            'for b in php php-fpm php7 php8; do command -v "$b" && exit 1; done; exit 0'; then
+            echo "OK: no PHP runtime present in ${IMAGE}"
+          else
+            echo "::error::${IMAGE} still contains a PHP runtime; refusing to deploy."
+            exit 1
+          fi
+        shell: bash
 
   config:
     name: Sync rendered config to host
@@ -91,7 +109,7 @@ jobs:
         shell: bash
 
   deploy:
-    name: Migrate, deploy, verify
+    name: Deploy takedown, verify offline
     runs-on: ubuntu-latest
     needs: [changes, build, config]
     if: |
@@ -106,21 +124,8 @@ jobs:
           ssh-keyscan -H ${{ secrets.VULTR_HOST }} > ~/.ssh/known_hosts
         shell: bash
 
-      - name: Migrate (only if image changed)
-        if: needs.build.result == 'success'
-        env:
-          GIT_SHA: ${{ github.sha }}
-        run: |
-          ssh -i ~/.ssh/id_ed25519 linuxuser@"${{ secrets.VULTR_HOST }}" \
-            "docker run --rm --network host \
-              --entrypoint php \
-              -w /srv/application \
-              -v ~/opencfp-production.yml:/srv/application/config/production.yml:ro \
-              -e CFP_ENV=production \
-              ewr.vultrcr.com/longhornphp/cfp:${GIT_SHA} \
-              bin/console doctrine:migrations:migrate --env=production --no-interaction"
-        shell: bash
-
+      # No migration step: the takedown image has no PHP binary, and the
+      # application is not meant to touch the database while it is offline.
       - name: Roll service & wait for convergence
         env:
           GIT_SHA: ${{ github.sha }}
@@ -133,13 +138,29 @@ jobs:
             IMAGE="ewr.vultrcr.com/longhornphp/cfp:${GIT_SHA}"
 
             if [ "$BUILD_RAN" = "true" ]; then
-              echo "==> Rolling service to ${IMAGE}"
+              echo "==> Rolling service to takedown image ${IMAGE}"
+              # --no-healthcheck: the service-level probe is defined on the host,
+              # outside this repo, and expects an HTTP 200 from the application.
+              # The takedown container answers 503 by design, so that probe must
+              # not gate this update. Liveness is checked via `docker service ps`.
+              # --update-failure-action pause: never roll back. A rollback would
+              # restore the previous PHP 7 image and re-expose the vulnerability.
               docker service update \
                 --image "$IMAGE" \
                 --with-registry-auth \
-                --update-failure-action rollback \
+                --no-healthcheck \
+                --update-failure-action pause \
                 longhornphp_opencfp
             else
+              echo "==> Config-only deploy: asserting the deployed image ships no PHP"
+              CURRENT=$(docker service inspect \
+                --format '{{.Spec.TaskTemplate.ContainerSpec.Image}}' longhornphp_opencfp)
+              if ! docker run --rm --entrypoint sh "$CURRENT" -c \
+                'for b in php php-fpm php7 php8; do command -v "$b" && exit 1; done; exit 0'; then
+                echo "::error::${CURRENT} provides a PHP runtime; refusing to recreate tasks."
+                echo "::error::Push an app change so the takedown image is built and deployed."
+                exit 1
+              fi
               echo "==> Config-only deploy: forcing task recreation to pick up new mounted config"
               docker service update --force longhornphp_opencfp
             fi
@@ -153,7 +174,7 @@ jobs:
               case "$STATE" in
                 completed) break ;;
                 rollback_completed)
-                  echo "::error::Deploy rolled back. New image failed healthcheck."
+                  echo "::error::Deploy rolled back to the previous image. Investigate immediately."
                   docker service ps longhornphp_opencfp --no-trunc
                   exit 1 ;;
                 paused)
@@ -182,10 +203,22 @@ jobs:
           ENDSSH
         shell: bash
 
-      - name: Verify
+      - name: Verify site is offline
         run: |
-          curl --fail --silent --show-error --max-time 30 -o /dev/null \
-            --retry 5 --retry-delay 5 --retry-all-errors \
-            -w "HTTP %{http_code} in %{time_total}s\n" \
-            https://cfp.longhornphp.com/
+          set -euo pipefail
+          URL=https://cfp.longhornphp.com/
+          STATUS=000
+          for attempt in $(seq 1 12); do
+            STATUS=$(curl --location --silent --show-error --max-time 30 \
+              --output /tmp/maintenance-body --write-out '%{http_code}' "$URL" || echo 000)
+            echo "attempt ${attempt}: HTTP ${STATUS}"
+            if [ "$STATUS" = "503" ] && grep -q 'OpenCFP is offline' /tmp/maintenance-body; then
+              echo "OK: site is offline and serving the static maintenance page."
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::Expected HTTP 503 with the maintenance page from ${URL}; last status ${STATUS}"
+          head -c 500 /tmp/maintenance-body || true
+          exit 1
         shell: bash

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <title>OpenCFP is offline</title>
+    <style>
+        :root {
+            color-scheme: light dark;
+            --bg: #f6f7f9;
+            --fg: #16181d;
+            --muted: #5b6472;
+            --rule: #d8dce3;
+            --accent: #7a2cff;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #12141a;
+                --fg: #ecedf1;
+                --muted: #9aa3b2;
+                --rule: #2a2f3a;
+                --accent: #b79bff;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1.25rem;
+            background: var(--bg);
+            color: var(--fg);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.55;
+        }
+
+        main {
+            width: 100%;
+            max-width: 40rem;
+            border-top: 4px solid var(--accent);
+            padding-top: 2rem;
+        }
+
+        .code {
+            font-size: 0.8rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        h1 {
+            margin: 0.75rem 0 1rem;
+            font-size: clamp(1.6rem, 4vw, 2.2rem);
+            line-height: 1.2;
+        }
+
+        p {
+            margin: 0 0 1rem;
+        }
+
+        .muted {
+            color: var(--muted);
+        }
+
+        footer {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--rule);
+            font-size: 0.9rem;
+            color: var(--muted);
+        }
+
+        a {
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+<main>
+    <div class="code">503 &middot; Service unavailable</div>
+
+    <h1>OpenCFP is offline</h1>
+
+    <p>
+        The call for papers is temporarily unavailable while we deploy an urgent
+        security update. We are not accepting submissions or account changes
+        until the work is finished.
+    </p>
+
+    <p class="muted">
+        We expect to be back shortly. Please try again later.
+    </p>
+
+    <footer>
+        Longhorn PHP Conference &middot;
+        <a href="https://www.longhornphp.com">longhornphp.com</a> &middot;
+        <a href="mailto:info@longhornphp.com">info@longhornphp.com</a>
+    </footer>
+</main>
+</body>
+</html>
