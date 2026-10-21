@@ -1,0 +1,22 @@
+# Takedown image for the production CFP service.
+#
+# This image is plain nginx serving a single static 503 page. It deliberately
+# ships no PHP runtime (no php, no php-fpm, no fastcgi handler in the nginx
+# config), so the application cannot execute while this image is deployed.
+#
+# It replaces .docker/Dockerfile in .github/workflows/vultr.yml for the
+# duration of the takedown. The PHP 7 image must not be redeployed: its base
+# image carries an unpatched high-severity vulnerability that is only fixed in
+# PHP 8. To bring the site back, port .docker/Dockerfile to PHP 8 first, then
+# point the build step back at it.
+
+FROM nginx:alpine
+
+LABEL Description="OpenCFP takedown image: static 503 responder, no PHP runtime." \
+      org.label-schema.name="opencfp-maintenance" \
+      org.label-schema.vcs-url="https://github.com/opencfp/opencfp.git"
+
+COPY .docker/maintenance/nginx.conf /etc/nginx/conf.d/default.conf
+COPY .docker/maintenance/maintenance.html /usr/share/nginx/html/maintenance.html
+
+EXPOSE 80
