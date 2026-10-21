@@ -42,6 +42,9 @@ jobs:
           bin/console doctrine:database:create --env=testing --if-not-exists
           bin/console doctrine:migrations:migrate --env=testing -n
       - name: Build assets
+        env:
+          # webpack 4 uses md4 hashing, which OpenSSL 3 on modern Node rejects.
+          NODE_OPTIONS: --openssl-legacy-provider
         run: |
           yarn install
           yarn run production
