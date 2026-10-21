@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 $year = date('Y');
 
@@ -98,7 +98,6 @@ return (new PhpCsFixer\Config())
                 'switch',
                 'throw',
                 'use',
-                'use_trait',
             ],
         ],
         'no_singleline_whitespace_before_semicolons' => true,
