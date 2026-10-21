@@ -16,9 +16,10 @@ namespace OpenCFP\Test\Unit\Domain\Services;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use OpenCFP\Domain\Services\ResetEmailer;
-use Swift_Mailer;
-use Swift_Message;
-use Twig\Template;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
+use Twig\Environment;
+use Twig\Loader\ArrayLoader;
 
 final class ResetEmailerTest extends \PHPUnit\Framework\TestCase
 {
@@ -29,26 +30,31 @@ final class ResetEmailerTest extends \PHPUnit\Framework\TestCase
     {
         $userEmail = 'user@example.com';
 
-        /* @var Swift_Mailer $swiftMailer */
-        $swiftMailer = Mockery::mock(Swift_Mailer::class)
+        $mailer = Mockery::mock(MailerInterface::class)
             ->shouldReceive('send')
             ->once()
-            ->with(Mockery::on(function (Swift_Message $message) use ($userEmail) {
-                return $message->getTo() === [
-                    $userEmail => null,
-                ];
+            ->with(Mockery::on(function (Email $message) use ($userEmail) {
+                $to = $message->getTo();
+
+                return $to !== []
+                    && $to[0]->getAddress() === $userEmail
+                    && $message->getSubject() === 'Password Reset Request';
             }))
             ->getMock();
 
-        /* @var Twig\Template $template */
-        $template = Mockery::mock(Twig\Template::class)->shouldIgnoreMissing();
+        $twig = new Environment(new ArrayLoader([
+            'emails/reset_password.twig' => <<<'TWIG'
+{% block subject %}Password Reset Request{% endblock %}
+{% block from %}admin@example.com{% endblock %}
+{% block from_name %}Reset{% endblock %}
+{% block body_text %}Plain text body{% endblock %}
+{% block body_html %}<p>HTML body</p>{% endblock %}
+TWIG
+            ,
+        ]));
 
-        $twig = Mockery::mock(\Twig\Environment::class);
-        $twig->shouldReceive('loadTemplate')
-            ->withArgs(['emails/reset_password.twig'])
-            ->andReturn($template);
         $resetEmailer = new ResetEmailer(
-            $swiftMailer,
+            $mailer,
             $twig,
             'admin@example.com',
             'Reset'

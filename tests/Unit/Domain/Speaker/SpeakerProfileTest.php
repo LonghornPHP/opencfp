@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace OpenCFP\Test\Unit\Domain\Speaker;
 
 use Illuminate\Support\Collection;
-use Localheinz\Test\Util\Helper;
+use Ergebnis\Test\Util\Helper;
 use OpenCFP\Domain\Model;
 use OpenCFP\Domain\Speaker\NotAllowedException;
 use OpenCFP\Domain\Speaker\SpeakerProfile;

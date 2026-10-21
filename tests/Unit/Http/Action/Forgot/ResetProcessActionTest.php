@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace OpenCFP\Test\Unit\Http\Action\Forgot;
 
-use Localheinz\Test\Util\Helper;
+use Ergebnis\Test\Util\Helper;
 use OpenCFP\Domain\Services;
 use OpenCFP\Http\Action\Forgot\ResetProcessAction;
 use OpenCFP\Infrastructure\Auth;
@@ -91,19 +91,22 @@ final class ResetProcessActionTest extends Framework\TestCase
 
         $userElement
             ->setData(Argument::exact((string) $userId))
-            ->shouldBeCalled();
+            ->shouldBeCalled()
+            ->willReturn($userElement->reveal());
 
         $resetCodeElement = $this->prophesize(Form\FormInterface::class);
 
         $resetCodeElement
             ->setData(Argument::exact($resetCode))
-            ->shouldBeCalled();
+            ->shouldBeCalled()
+            ->willReturn($resetCodeElement->reveal());
 
         $resetForm = $this->prophesize(Form\FormInterface::class);
 
         $resetForm
             ->handleRequest(Argument::exact($request))
-            ->shouldBeCalled();
+            ->shouldBeCalled()
+            ->willReturn($resetForm->reveal());
 
         $resetForm
             ->isSubmitted()
@@ -170,19 +173,22 @@ final class ResetProcessActionTest extends Framework\TestCase
 
         $userElement
             ->setData(Argument::exact((string) $userId))
-            ->shouldBeCalled();
+            ->shouldBeCalled()
+            ->willReturn($userElement->reveal());
 
         $resetCodeElement = $this->prophesize(Form\FormInterface::class);
 
         $resetCodeElement
             ->setData(Argument::exact($resetCode))
-            ->shouldBeCalled();
+            ->shouldBeCalled()
+            ->willReturn($resetCodeElement->reveal());
 
         $resetForm = $this->prophesize(Form\FormInterface::class);
 
         $resetForm
             ->handleRequest(Argument::exact($request))
-            ->shouldBeCalled();
+            ->shouldBeCalled()
+            ->willReturn($resetForm->reveal());
 
         $resetForm
             ->isSubmitted()
@@ -267,7 +273,8 @@ final class ResetProcessActionTest extends Framework\TestCase
 
         $resetForm
             ->handleRequest(Argument::exact($request))
-            ->shouldBeCalled();
+            ->shouldBeCalled()
+            ->willReturn($resetForm->reveal());
 
         $resetForm
             ->isSubmitted()
@@ -341,7 +348,8 @@ final class ResetProcessActionTest extends Framework\TestCase
 
         $resetForm
             ->handleRequest(Argument::exact($request))
-            ->shouldBeCalled();
+            ->shouldBeCalled()
+            ->willReturn($resetForm->reveal());
 
         $resetForm
             ->isSubmitted()
@@ -407,7 +415,8 @@ final class ResetProcessActionTest extends Framework\TestCase
 
         $resetForm
             ->handleRequest(Argument::exact($request))
-            ->shouldBeCalled();
+            ->shouldBeCalled()
+            ->willReturn($resetForm->reveal());
 
         $resetForm
             ->isSubmitted()

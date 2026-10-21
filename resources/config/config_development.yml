@@ -5,6 +5,8 @@ framework:
   router:
     resource: '%kernel.project_dir%/resources/config/routing_development.yml'
   profiler: ~
+  mailer:
+    dsn: '%mail.dsn%'
 
 web_profiler:
   toolbar: true
@@ -13,7 +15,7 @@ oneup_flysystem:
   adapters:
     uploads:
       local:
-        directory: "%kernel.root_dir%/../web/uploads"
+        location: "%kernel.project_dir%/web/uploads"
 
   filesystems:
     uploads:
@@ -32,6 +34,6 @@ doctrine:
     mappings:
       OpenCFP\Domain\Entity:
         type: annotation
-        dir: "%kernel.root_dir%/../src/Domain/Entity"
+        dir: "%kernel.project_dir%/src/Domain/Entity"
         prefix: OpenCFP\Domain\Entity
 

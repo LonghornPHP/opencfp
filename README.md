@@ -56,10 +56,10 @@ See [`CONTRIBUTING.md`](.github/CONTRIBUTING.md).
 
 ## [Minimum Requirements](#requirements)
 
- * PHP 7.3 (currently does not work on PHP 7.4 due to dependency issues)
+ * PHP 8.3
  * Apache 2+ with `mod_rewrite` enabled and an `AllowOverride all` directive in your `<Directory>` block is the recommended web server
  * Composer requirements are listed in [composer.json](composer.json).
- * You may need to install `php7.0-intl` extension for PHP. (`php-intl` on CentOS/RHEL-based distributions)
+ * You may need to install `php8.3-intl` extension for PHP. (`php-intl` on CentOS/RHEL-based distributions)
  * Either the GD image library or the Imagick PHP extension for the [Intervention image library](http://image.intervention.io/getting_started/installation))
 
 ## [Privacy Restrictions](#privacy)
@@ -189,7 +189,7 @@ server {
 
 		fastcgi_param CFP_ENV production;
 		fastcgi_split_path_info ^(.+\.php)(/.+)$;
-		fastcgi_pass unix:/var/run/php71-fpm.sock;
+		fastcgi_pass unix:/var/run/php83-fpm.sock;
 		fastcgi_read_timeout 150;
 		fastcgi_index index.php;
 		fastcgi_param  SCRIPT_FILENAME $document_root$fastcgi_script_name;

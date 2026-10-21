@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace OpenCFP\Test\AutoReview;
 
-use Localheinz\Test\Util\Helper;
+use Ergebnis\Test\Util\Helper;
 use OpenCFP\Domain;
 use OpenCFP\Http;
 use OpenCFP\Infrastructure;

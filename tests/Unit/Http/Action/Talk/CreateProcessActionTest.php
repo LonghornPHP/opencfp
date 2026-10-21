@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace OpenCFP\Test\Unit\Http\Action\Talk;
 
 use HTMLPurifier;
-use Localheinz\Test\Util\Helper;
+use Ergebnis\Test\Util\Helper;
 use OpenCFP\Domain\CallForPapers;
 use OpenCFP\Domain\Services;
 use OpenCFP\Http\Action\Talk\CreateProcessAction;
@@ -83,7 +83,7 @@ final class CreateProcessActionTest extends Framework\TestCase
             $this->prophesize(View\TalkHelper::class)->reveal(),
             $callForPapers->reveal(),
             $this->prophesize(HTMLPurifier::class)->reveal(),
-            $this->prophesize(\Swift_Mailer::class)->reveal(),
+            $this->prophesize(\Symfony\Component\Mailer\MailerInterface::class)->reveal(),
             $applicationEmail,
             $applicationTitle,
             $applicationEndDate,

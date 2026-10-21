@@ -11,5 +11,5 @@ services:
     class: HTMLPurifier_Config
     factory: [HTMLPurifier_Config, createDefault]
     calls:
-      - [set, [Cache.SerializerPermissions, 0755]]
+      - [set, [Cache.SerializerPermissions, 0o755]]
       - [set, [Cache.SerializerPath, '%kernel.cache_dir%/htmlpurifier']]

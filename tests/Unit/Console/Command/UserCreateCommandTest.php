@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace OpenCFP\Test\Unit\Console\Command;
 
-use Localheinz\Test\Util\Helper;
+use Ergebnis\Test\Util\Helper;
 use OpenCFP\Console\Command\UserCreateCommand;
 use OpenCFP\Domain\Services;
 use OpenCFP\Infrastructure\Auth;
@@ -218,7 +218,7 @@ final class UserCreateCommandTest extends Framework\TestCase
             $email
         );
 
-        $this->assertContains($message, $commandTester->getDisplay());
+        $this->assertStringContainsString($message, $commandTester->getDisplay());
     }
 
     /**
@@ -269,15 +269,15 @@ final class UserCreateCommandTest extends Framework\TestCase
         ]);
 
         $this->assertSame(0, $commandTester->getStatusCode());
-        $this->assertContains('Creating User', $commandTester->getDisplay());
+        $this->assertStringContainsString('Creating User', $commandTester->getDisplay());
 
         $creationMessage = \sprintf(
             ' * created user with login %s',
             $email
         );
 
-        $this->assertContains($creationMessage, $commandTester->getDisplay());
-        $this->assertContains('User Created', $commandTester->getDisplay());
+        $this->assertStringContainsString($creationMessage, $commandTester->getDisplay());
+        $this->assertStringContainsString('User Created', $commandTester->getDisplay());
     }
 
     /**
@@ -333,14 +333,14 @@ final class UserCreateCommandTest extends Framework\TestCase
         $commandTester->execute($options);
 
         $this->assertSame(0, $commandTester->getStatusCode());
-        $this->assertContains('Creating User', $commandTester->getDisplay());
+        $this->assertStringContainsString('Creating User', $commandTester->getDisplay());
 
         $creationMessage = \sprintf(
             ' * created user with login %s',
             $email
         );
 
-        $this->assertContains($creationMessage, $commandTester->getDisplay());
+        $this->assertStringContainsString($creationMessage, $commandTester->getDisplay());
 
         $promotionMessage = \implode(PHP_EOL, \array_map(function (string $role) {
             return \sprintf(
@@ -349,8 +349,8 @@ final class UserCreateCommandTest extends Framework\TestCase
             );
         }, $roles));
 
-        $this->assertContains($promotionMessage, $commandTester->getDisplay());
-        $this->assertContains('User Created', $commandTester->getDisplay());
+        $this->assertStringContainsString($promotionMessage, $commandTester->getDisplay());
+        $this->assertStringContainsString('User Created', $commandTester->getDisplay());
     }
 
     public function providerOptionsAndRoles(): \Generator

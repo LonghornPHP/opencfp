@@ -15,7 +15,7 @@ namespace OpenCFP\Infrastructure\Event;
 
 use HTMLPurifier;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 final class RequestCleanerListener implements EventSubscriberInterface
@@ -40,8 +40,12 @@ final class RequestCleanerListener implements EventSubscriberInterface
         ];
     }
 
-    public function onKernelRequest(GetResponseEvent $event)
+    public function onKernelRequest(RequestEvent $event)
     {
+        if (!$event->isMainRequest()) {
+            return;
+        }
+
         $request = $event->getRequest();
 
         $request->query->replace($this->clean($request->query->all()));

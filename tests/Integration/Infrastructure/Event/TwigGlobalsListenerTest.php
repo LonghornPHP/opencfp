@@ -23,7 +23,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Twig\Environment;
@@ -58,15 +58,17 @@ final class TwigGlobalsListenerTest extends TestCase
         $eventDispatcher->addSubscriber(new TwigGlobalsListener(
             $authentication,
             $this->mockCallForPapers($isOpen),
-            $session,
             $twig
         ));
 
-        $eventDispatcher->dispatch(KernelEvents::REQUEST, new GetResponseEvent(
+        $request = Request::create($uri);
+        $request->setSession($session);
+
+        $eventDispatcher->dispatch(new RequestEvent(
             Mockery::mock(HttpKernelInterface::class),
-            Request::create($uri),
-            HttpKernelInterface::MASTER_REQUEST
-        ));
+            $request,
+            HttpKernelInterface::MAIN_REQUEST
+        ), KernelEvents::REQUEST);
 
         $output = $twig->render('globals.txt.twig');
 

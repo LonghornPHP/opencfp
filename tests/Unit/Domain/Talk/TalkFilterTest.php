@@ -28,7 +28,7 @@ final class TalkFilterTest extends Framework\TestCase
 
     protected $formatter;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->talk      = Mockery::mock(Talk::class);

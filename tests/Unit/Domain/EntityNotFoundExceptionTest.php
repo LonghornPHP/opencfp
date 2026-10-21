@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace OpenCFP\Test\Unit\Domain;
 
-use Localheinz\Test\Util\Helper;
+use Ergebnis\Test\Util\Helper;
 use OpenCFP\Domain\EntityNotFoundException;
 use PHPUnit\Framework;
 

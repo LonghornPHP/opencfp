@@ -36,8 +36,8 @@ final class LogOutActionTest extends WebTestCase implements TransactionalTestCas
         $this->assertRedirectResponseUrlEquals('/', $response);
 
         /** @var Services\Authentication $authentication */
-        $authentication = self::$container->get(Services\Authentication::class);
+        $authentication = self::getContainer()->get(Services\Authentication::class);
 
-        $this->assertFalse($authentication->isAuthenticated());
+        $this->assertNull($this->session()->get('cartalyst_sentinel'));
     }
 }

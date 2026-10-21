@@ -24,7 +24,7 @@ final class PaginationTest extends Framework\TestCase
      */
     private $pagination;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->pagination = new Pagination([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 2);
     }
@@ -56,12 +56,12 @@ final class PaginationTest extends Framework\TestCase
     public function createViewWorks()
     {
         $view = $this->pagination->createView('/help/example?');
-        $this->assertContains('/help/example?', $view);
-        $this->assertContains('page=2', $view);
+        $this->assertStringContainsString('/help/example?', $view);
+        $this->assertStringContainsString('page=2', $view);
 
         $otherView = $this->pagination->createView('/help/example?', ['filter' => 'bam']);
-        $this->assertContains('/help/example?', $otherView);
-        $this->assertContains('page=2', $otherView);
-        $this->assertContains('filter=bam', $otherView);
+        $this->assertStringContainsString('/help/example?', $otherView);
+        $this->assertStringContainsString('page=2', $otherView);
+        $this->assertStringContainsString('filter=bam', $otherView);
     }
 }

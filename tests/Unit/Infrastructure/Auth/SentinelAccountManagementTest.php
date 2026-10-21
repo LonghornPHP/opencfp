@@ -16,8 +16,9 @@ namespace OpenCFP\Test\Unit\Infrastructure\Auth;
 use Cartalyst\Sentinel\Roles;
 use Cartalyst\Sentinel\Sentinel;
 use Cartalyst\Sentinel\Users;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Collection;
-use Localheinz\Test\Util\Helper;
+use Ergebnis\Test\Util\Helper;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use OpenCFP\Domain\Services\AccountManagement;
@@ -203,7 +204,7 @@ final class SentinelAccountManagementTest extends \PHPUnit\Framework\TestCase
     {
         $sentinel = Mockery::mock(Sentinel::class);
         $sentinel->shouldReceive('getUserRepository->findByCredentials')->andReturn(null);
-        $sentinel->shouldReceive('getUserRepository->create')->andReturn(false);
+        $sentinel->shouldReceive('getUserRepository->create')->andReturn(null);
         $account = new SentinelAccountManagement($sentinel);
         $this->expectException(UserExistsException::class);
         $account->create('mail@mail.mail', 'pass');
@@ -278,7 +279,7 @@ final class SentinelAccountManagementTest extends \PHPUnit\Framework\TestCase
             ->shouldReceive('getUserId')
             ->andReturn($userId);
 
-        $userCollection = Mockery::mock(Collection::class);
+        $userCollection = Mockery::mock(BelongsToMany::class);
 
         $userCollection
             ->shouldReceive('attach')
@@ -297,7 +298,7 @@ final class SentinelAccountManagementTest extends \PHPUnit\Framework\TestCase
             ->with($roleName)
             ->andReturn($role);
 
-        $userRepository = Mockery::mock(Roles\RoleRepositoryInterface::class);
+        $userRepository = Mockery::mock(Users\UserRepositoryInterface::class);
 
         $userRepository
             ->shouldReceive('findByCredentials')
@@ -378,7 +379,7 @@ final class SentinelAccountManagementTest extends \PHPUnit\Framework\TestCase
             ->shouldReceive('getUserId')
             ->andReturn($userId);
 
-        $userCollection = Mockery::mock(Collection::class);
+        $userCollection = Mockery::mock(BelongsToMany::class);
 
         $userCollection
             ->shouldReceive('detach')
@@ -397,7 +398,7 @@ final class SentinelAccountManagementTest extends \PHPUnit\Framework\TestCase
             ->with($roleName)
             ->andReturn($role);
 
-        $userRepository = Mockery::mock(Roles\RoleRepositoryInterface::class);
+        $userRepository = Mockery::mock(Users\UserRepositoryInterface::class);
 
         $userRepository
             ->shouldReceive('findByCredentials')

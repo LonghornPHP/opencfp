@@ -21,7 +21,7 @@ final class SignupFormTest extends \PHPUnit\Framework\TestCase
 {
     private $purifier;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->purifier = new \HTMLPurifier();
     }
@@ -54,7 +54,7 @@ final class SignupFormTest extends \PHPUnit\Framework\TestCase
         $form->validateSpeakerPhoto();
 
         $this->assertTrue($form->hasErrors());
-        $this->assertContains('stubbed error message', $form->getErrorMessages()[0]);
+        $this->assertStringContainsString('stubbed error message', $form->getErrorMessages()[0]);
     }
 
     /**

@@ -16,9 +16,7 @@ namespace OpenCFP\Infrastructure\Event;
 use OpenCFP\Domain\CallForPapers;
 use OpenCFP\Domain\Services\Authentication;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Twig\Environment;
 
@@ -35,11 +33,6 @@ class TwigGlobalsListener implements EventSubscriberInterface
     private $callForPapers;
 
     /**
-     * @var SessionInterface
-     */
-    private $session;
-
-    /**
      * @var Twig\Environment
      */
     private $twig;
@@ -47,25 +40,23 @@ class TwigGlobalsListener implements EventSubscriberInterface
     public function __construct(
         Authentication $authentication,
         CallForPapers $callForPapers,
-        SessionInterface $session,
         Environment $twig
     ) {
         $this->authentication = $authentication;
         $this->callForPapers  = $callForPapers;
         $this->twig           = $twig;
-        $this->session        = $session;
     }
 
     public static function getSubscribedEvents()
     {
         return [
-            KernelEvents::REQUEST => ['onKernelRequest', 128],
+            KernelEvents::REQUEST => ['onKernelRequest', 120],
         ];
     }
 
-    public function onKernelRequest(GetResponseEvent $event)
+    public function onKernelRequest(RequestEvent $event)
     {
-        if ($event->getRequestType() !== HttpKernelInterface::MASTER_REQUEST) {
+        if (!$event->isMainRequest()) {
             return;
         }
 
@@ -82,9 +73,11 @@ class TwigGlobalsListener implements EventSubscriberInterface
         }
 
         // Flash
-        if ($this->session->has('flash')) {
-            $this->twig->addGlobal('flash', $this->session->get('flash'));
-            $this->session->set('flash', null);
+        $session = $request->hasSession() ? $request->getSession() : null;
+
+        if ($session !== null && $session->has('flash')) {
+            $this->twig->addGlobal('flash', $session->get('flash'));
+            $session->set('flash', null);
         }
     }
 }

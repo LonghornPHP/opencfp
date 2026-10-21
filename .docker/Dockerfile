@@ -1,4 +1,4 @@
-FROM php:7-fpm-alpine as base
+FROM php:8.3-fpm-alpine as base
 
 LABEL Description="This is the docker image for OpenCFP, a PHP-based conference talk submission system." \
       org.label-schema.name=$IMAGE_NAME \

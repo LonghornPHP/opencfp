@@ -18,7 +18,8 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Request;
-use Localheinz\Test\Util\Helper;
+use GuzzleHttp\Psr7\Response;
+use Ergebnis\Test\Util\Helper;
 use OpenCFP\Domain\Services;
 use OpenCFP\Http\Action\Security\SsoRedirectAction;
 use OpenCFP\Infrastructure\Auth\UserNotFoundException;
@@ -53,7 +54,7 @@ final class SsoRedirectActionTest extends Framework\TestCase
 
     private $postResponse;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -66,12 +67,7 @@ final class SsoRedirectActionTest extends Framework\TestCase
         $this->sentinel     = $this->prophesize(\Cartalyst\Sentinel\Sentinel::class);
         $this->accounts     = $this->prophesize(Services\AccountManagement::class);
         $this->urlGenerator = $this->prophesize(Routing\Generator\UrlGeneratorInterface::class);
-        $this->postResponse = new class() {
-            public function getBody()
-            {
-                return '{"access_token": "test_token"}';
-            }
-        };
+        $this->postResponse = new Response(200, [], '{"access_token": "test_token"}');
     }
 
     /**
@@ -121,7 +117,7 @@ final class SsoRedirectActionTest extends Framework\TestCase
         );
 
         $response = $redirectAction($request->reveal());
-        $this->assertContains('Redirecting to /login', $response->getContent());
+        $this->assertStringContainsString('Redirecting to /login', $response->getContent());
     }
 
     /**
@@ -165,7 +161,7 @@ final class SsoRedirectActionTest extends Framework\TestCase
         );
 
         $response = $redirectAction($request->reveal());
-        $this->assertContains('Redirecting to /dashboard', $response->getContent());
+        $this->assertStringContainsString('Redirecting to /dashboard', $response->getContent());
     }
 
     /**
@@ -216,7 +212,7 @@ final class SsoRedirectActionTest extends Framework\TestCase
         );
 
         $response = $redirectAction($request->reveal());
-        $this->assertContains('Redirecting to /dashboard', $response->getContent());
+        $this->assertStringContainsString('Redirecting to /dashboard', $response->getContent());
     }
 
     /**
@@ -228,12 +224,7 @@ final class SsoRedirectActionTest extends Framework\TestCase
             ->generate('login')
             ->willReturn('/login');
 
-        $postResponse = new class() {
-            public function getBody()
-            {
-                return 'THISISNOTVALIDJSON';
-            }
-        };
+        $postResponse = new Response(200, [], 'THISISNOTVALIDJSON');
 
         $httpClient = $this->prophesize(Client::class);
         $httpClient
@@ -245,17 +236,12 @@ final class SsoRedirectActionTest extends Framework\TestCase
             ->willReturn($postResponse);
 
         $request = $this->prophesize(HttpFoundation\Request::class);
-        $session = new class() {
-            public function set()
-            {
-                return null;
-            }
-        };
+        $session = $this->prophesize(HttpFoundation\Session\SessionInterface::class);
         $request
             ->getSession()
             ->shouldBeCalled()
-            ->willReturn($session);
-        $request->get('code')->shouldBeCalled();
+            ->willReturn($session->reveal());
+        $request->get('code')->shouldBeCalled()->willReturn('test');
 
         $redirectAction = new SsoRedirectAction(
             $this->sentinel->reveal(),
@@ -270,7 +256,7 @@ final class SsoRedirectActionTest extends Framework\TestCase
         );
 
         $response = $redirectAction($request->reveal());
-        $this->assertContains('Redirecting to /login', $response->getContent());
+        $this->assertStringContainsString('Redirecting to /login', $response->getContent());
     }
 
     /**
@@ -281,18 +267,8 @@ final class SsoRedirectActionTest extends Framework\TestCase
         $this->urlGenerator
             ->generate('login')
             ->willReturn('/login');
-        $postResponse = new class() {
-            public function getBody(): string
-            {
-                return '{"access_token": "test_token"}';
-            }
-        };
-        $badUserResponse = new class() {
-            public function getBody(): string
-            {
-                return 'INVALID:JSON';
-            }
-        };
+        $postResponse = new Response(200, [], '{"access_token": "test_token"}');
+        $badUserResponse = new Response(200, [], 'INVALID:JSON');
 
         $httpClient = $this->prophesize(Client::class);
         $httpClient
@@ -305,19 +281,15 @@ final class SsoRedirectActionTest extends Framework\TestCase
             ->willReturn($badUserResponse);
 
         $request = $this->prophesize(HttpFoundation\Request::class);
-        $session = new class() {
-            public function set()
-            {
-                return null;
-            }
-        };
+        $session = $this->prophesize(HttpFoundation\Session\SessionInterface::class);
         $request
             ->get('code')
-            ->shouldBeCalled();
+            ->shouldBeCalled()
+            ->willReturn('test');
         $request
             ->getSession()
             ->shouldBeCalled()
-            ->willReturn($session);
+            ->willReturn($session->reveal());
 
         $redirectAction = new SsoRedirectAction(
             $this->sentinel->reveal(),
@@ -332,7 +304,7 @@ final class SsoRedirectActionTest extends Framework\TestCase
         );
 
         $response = $redirectAction($request->reveal());
-        $this->assertContains('Redirecting to /login', $response->getContent());
+        $this->assertStringContainsString('Redirecting to /login', $response->getContent());
     }
 
     private function createUserDouble(): \Mockery\MockInterface
@@ -348,18 +320,6 @@ final class SsoRedirectActionTest extends Framework\TestCase
 
     private function createGetResponse($email)
     {
-        return new class($email) {
-            protected $email;
-
-            public function __construct($email)
-            {
-                $this->email = $email;
-            }
-
-            public function getBody()
-            {
-                return '{"email": "' . $this->email . '"}';
-            }
-        };
+        return new Response(200, [], '{"email": "' . $email . '"}');
     }
 }

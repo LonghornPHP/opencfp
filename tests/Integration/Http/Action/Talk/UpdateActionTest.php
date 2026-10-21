@@ -27,9 +27,7 @@ final class UpdateActionTest extends WebTestCase implements TransactionalTestCas
         /** @var Model\User $speaker */
         $speaker = factory(Model\User::class)->create()->first();
 
-        $csrfToken = self::$container->get('security.csrf.token_manager')
-            ->getToken('speaker_talk')
-            ->getValue();
+        $csrfToken = $this->csrfToken('speaker_talk');
 
         $response = $this
             ->asLoggedInSpeaker($speaker->id)
@@ -52,9 +50,7 @@ final class UpdateActionTest extends WebTestCase implements TransactionalTestCas
         /** @var Model\User $speaker */
         $speaker = factory(Model\User::class)->create()->first();
 
-        $csrfToken = self::$container->get('security.csrf.token_manager')
-            ->getToken('speaker_talk')
-            ->getValue();
+        $csrfToken = $this->csrfToken('speaker_talk');
 
         $response = $this
             ->asLoggedInSpeaker($speaker->id)

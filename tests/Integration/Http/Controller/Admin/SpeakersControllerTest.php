@@ -91,9 +91,7 @@ final class SpeakersControllerTest extends WebTestCase implements TransactionalT
         /** @var User $admin */
         $admin = factory(User::class, 1)->create()->first();
 
-        $csrfToken = self::$container->get('security.csrf.token_manager')
-            ->getToken('admin_speaker_demote')
-            ->getValue();
+        $csrfToken = $this->csrfToken('admin_speaker_demote');
 
         $response = $this
             ->asAdmin($admin->id)
@@ -122,9 +120,7 @@ final class SpeakersControllerTest extends WebTestCase implements TransactionalT
         /** @var User $admin */
         $admin = factory(User::class, 1)->create()->first();
 
-        $csrfToken = self::$container->get('security.csrf.token_manager')
-            ->getToken('admin_speaker_demote')
-            ->getValue();
+        $csrfToken = $this->csrfToken('admin_speaker_demote');
 
         $response = $this
             ->asAdmin($admin->id)
@@ -152,11 +148,9 @@ final class SpeakersControllerTest extends WebTestCase implements TransactionalT
         /** @var User $speaker */
         $speaker = factory(User::class, 1)->create()->first();
 
-        self::$container->get(AccountManagement::class)->promoteToAdmin($speaker->email);
+        self::getContainer()->get(AccountManagement::class)->promoteToAdmin($speaker->email);
 
-        $csrfToken = self::$container->get('security.csrf.token_manager')
-            ->getToken('admin_speaker_demote')
-            ->getValue();
+        $csrfToken = $this->csrfToken('admin_speaker_demote');
 
         $response = $this
             ->asAdmin($admin->id)
@@ -182,7 +176,7 @@ final class SpeakersControllerTest extends WebTestCase implements TransactionalT
         /** @var User $speaker */
         $speaker = factory(User::class, 1)->create()->first();
 
-        self::$container->get(AccountManagement::class)->promoteToAdmin($speaker->email);
+        self::getContainer()->get(AccountManagement::class)->promoteToAdmin($speaker->email);
 
         $response = $this
             ->asAdmin($admin->id)

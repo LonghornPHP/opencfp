@@ -19,10 +19,11 @@ use OpenCFP\Domain\Model;
 use OpenCFP\Domain\Services;
 use OpenCFP\Http\Form;
 use OpenCFP\Http\View;
-use OpenCFP\Infrastructure\Templating\Template;
-use Swift_Mailer;
-use Swift_Message;
 use Symfony\Component\HttpFoundation;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing;
 use Twig\Environment;
 
@@ -49,7 +50,7 @@ final class CreateProcessAction
     private $purifier;
 
     /**
-     * @var Swift_Mailer
+     * @var MailerInterface
      */
     private $mailer;
 
@@ -83,7 +84,7 @@ final class CreateProcessAction
         View\TalkHelper $talkHelper,
         CallForPapers $callForPapers,
         HTMLPurifier $purifier,
-        Swift_Mailer $mailer,
+        MailerInterface $mailer,
         string $applicationEmail,
         string $applicationTitle,
         string $applicationEndDate,
@@ -175,7 +176,7 @@ final class CreateProcessAction
                 'short' => 'Success',
                 'ext'   => 'Successfully saved talk.',
             ]);
-        } catch (\Swift_TransportException $e) {
+        } catch (TransportExceptionInterface $e) {
             $request->getSession()->set('flash', [
                 'type'  => 'error',
                 'short' => 'Error',
@@ -201,12 +202,9 @@ final class CreateProcessAction
         );
     }
 
-    private function sendSubmitEmail(string $email, int $talkId)
+    private function sendSubmitEmail(string $email, int $talkId): void
     {
         $talk = Model\Talk::find($talkId, ['title']);
-
-        /** @var Template $template */
-        $template = $this->twig->loadTemplate('emails/talk_submit.twig');
 
         $parameters = [
             'email'   => $this->applicationEmail,
@@ -215,21 +213,19 @@ final class CreateProcessAction
             'enddate' => $this->applicationEndDate,
         ];
 
-        $message = new Swift_Message();
+        $template = $this->twig->load('emails/talk_submit.twig')->unwrap();
 
-        $message->setTo($email);
-        $message->setFrom(
-            $template->renderBlockWithContext('from', $parameters),
-            $template->renderBlockWithContext('from_name', $parameters)
-        );
+        $render = function (string $block) use ($template, $parameters): string {
+            return $template->renderBlock($block, $this->twig->mergeGlobals($parameters));
+        };
 
-        $message->setSubject($template->renderBlockWithContext('subject', $parameters));
-        $message->setBody($template->renderBlockWithContext('body_text', $parameters));
-        $message->addPart(
-            $template->renderBlockWithContext('body_html', $parameters),
-            'text/html'
-        );
+        $message = (new Email())
+            ->to($email)
+            ->from(new Address($render('from'), $render('from_name')))
+            ->subject($render('subject'))
+            ->text($render('body_text'))
+            ->html($render('body_html'));
 
-        return $this->mailer->send($message);
+        $this->mailer->send($message);
     }
 }

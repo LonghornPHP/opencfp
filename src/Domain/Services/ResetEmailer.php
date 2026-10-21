@@ -13,18 +13,20 @@ declare(strict_types=1);
 
 namespace OpenCFP\Domain\Services;
 
-use OpenCFP\Infrastructure\Templating\Template;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\Email;
 use Twig\Environment;
 
 class ResetEmailer
 {
     /**
-     * @var \Swift_Mailer
+     * @var MailerInterface
      */
-    private $swiftMailer;
+    private $mailer;
 
     /**
-     * @var \Twig\Environment
+     * @var Environment
      */
     private $twig;
 
@@ -38,15 +40,9 @@ class ResetEmailer
      */
     private $configTitle;
 
-    /**
-     * @param \Swift_Mailer $swiftMailer
-     * @param Environment   $twig
-     * @param string        $configEmail
-     * @param string        $configTitle
-     */
-    public function __construct(\Swift_Mailer $swiftMailer, Environment $twig, string $configEmail, string $configTitle)
+    public function __construct(MailerInterface $mailer, Environment $twig, string $configEmail, string $configTitle)
     {
-        $this->swiftMailer = $swiftMailer;
+        $this->mailer      = $mailer;
         $this->twig        = $twig;
         $this->configEmail = $configEmail;
         $this->configTitle = $configTitle;
@@ -64,9 +60,9 @@ class ResetEmailer
         $parameters = $this->parameters($userId, $resetCode);
 
         try {
-            $message = $this->preparedMessage($email, $parameters);
+            $this->mailer->send($this->preparedMessage($email, $parameters));
 
-            return $this->swiftMailer->send($message);
+            return 1;
         } catch (\Exception $e) {
             return false;
         }
@@ -94,29 +90,20 @@ class ResetEmailer
     /**
      * @param string $email
      * @param array  $parameters
-     *
-     * @return \Swift_Message
      */
-    private function preparedMessage($email, $parameters)
+    private function preparedMessage($email, $parameters): Email
     {
-        $message = new \Swift_Message();
+        $template = $this->twig->load('emails/reset_password.twig')->unwrap();
 
-        /** @var Template $template */
-        $template = $this->twig->loadTemplate('emails/reset_password.twig');
+        $render = function (string $block) use ($template, $parameters): string {
+            return $template->renderBlock($block, $this->twig->mergeGlobals($parameters));
+        };
 
-        $message->setTo($email);
-        $message->setFrom(
-            $template->renderBlockWithContext('from', $parameters),
-            $template->renderBlockWithContext('from_name', $parameters)
-        );
-
-        $message->setSubject($template->renderBlockWithContext('subject', $parameters));
-        $message->setBody($template->renderBlockWithContext('body_text', $parameters));
-        $message->addPart(
-            $template->renderBlockWithContext('body_html', $parameters),
-            'text/html'
-        );
-
-        return $message;
+        return (new Email())
+            ->to($email)
+            ->from(new Address($render('from'), $render('from_name')))
+            ->subject($render('subject'))
+            ->text($render('body_text'))
+            ->html($render('body_html'));
     }
 }

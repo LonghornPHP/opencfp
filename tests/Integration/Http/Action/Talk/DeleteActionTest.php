@@ -31,9 +31,7 @@ final class DeleteActionTest extends WebTestCase implements TransactionalTestCas
         /** @var User $speaker */
         $speaker = $talk->speaker()->first();
 
-        $csrfToken = self::$container->get('security.csrf.token_manager')
-            ->getToken('delete_talk')
-            ->getValue();
+        $csrfToken = $this->csrfToken('delete_talk');
 
         $response = $this
             ->asLoggedInSpeaker($speaker->id)
@@ -60,9 +58,7 @@ final class DeleteActionTest extends WebTestCase implements TransactionalTestCas
         /** @var User $otherSpeaker*/
         $otherSpeaker = factory(User::class, 1)->create()->first();
 
-        $csrfToken = self::$container->get('security.csrf.token_manager')
-            ->getToken('delete_talk')
-            ->getValue();
+        $csrfToken = $this->csrfToken('delete_talk');
 
         $response = $this
             ->asLoggedInSpeaker($otherSpeaker->id)

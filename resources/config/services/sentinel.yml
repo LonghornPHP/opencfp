@@ -8,8 +8,16 @@ services:
       - [setReminderRepository, ['@Cartalyst\Sentinel\Reminders\ReminderRepositoryInterface']]
       - [setThrottleRepository, ['@Cartalyst\Sentinel\Throttling\ThrottleRepositoryInterface']]
 
+  OpenCFP\Infrastructure\Auth\SymfonySentinelSession: ~
+
+  Cartalyst\Sentinel\Sessions\SessionInterface:
+    alias: OpenCFP\Infrastructure\Auth\SymfonySentinelSession
+
   Cartalyst\Sentinel\Activations\ActivationRepositoryInterface:
     class: Cartalyst\Sentinel\Activations\IlluminateActivationRepository
+    arguments:
+      - 'Cartalyst\Sentinel\Activations\EloquentActivation'
+      - 259200
 
   Cartalyst\Sentinel\Cookies\CookieInterface:
     class: Cartalyst\Sentinel\Cookies\NullCookie
@@ -19,21 +27,26 @@ services:
 
   Cartalyst\Sentinel\Persistences\PersistenceRepositoryInterface:
     class: Cartalyst\Sentinel\Persistences\IlluminatePersistenceRepository
+    arguments:
+      $model: 'Cartalyst\Sentinel\Persistences\EloquentPersistence'
 
   Cartalyst\Sentinel\Reminders\ReminderRepositoryInterface:
     class: Cartalyst\Sentinel\Reminders\IlluminateReminderRepository
+    arguments:
+      $model: 'Cartalyst\Sentinel\Reminders\EloquentReminder'
 
   Cartalyst\Sentinel\Roles\RoleRepositoryInterface:
     class: Cartalyst\Sentinel\Roles\IlluminateRoleRepository
-
-  Cartalyst\Sentinel\Sessions\SessionInterface:
-    alias: OpenCFP\Infrastructure\Auth\SymfonySentinelSession
+    arguments:
+      $model: 'Cartalyst\Sentinel\Roles\EloquentRole'
 
   Cartalyst\Sentinel\Throttling\ThrottleRepositoryInterface:
     class: Cartalyst\Sentinel\Throttling\IlluminateThrottleRepository
 
   Cartalyst\Sentinel\Users\UserRepositoryInterface:
     class: Cartalyst\Sentinel\Users\IlluminateUserRepository
+    arguments:
+      $model: 'Cartalyst\Sentinel\Users\EloquentUser'
 
   Illuminate\Contracts\Events\Dispatcher:
     class: Illuminate\Events\Dispatcher

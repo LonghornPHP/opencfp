@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace OpenCFP\Test\Unit\Infrastructure\Auth;
 
 use Cartalyst\Sentinel\Sentinel;
-use Localheinz\Test\Util\Helper;
+use Ergebnis\Test\Util\Helper;
 use Mockery as m;
 use OpenCFP\Infrastructure\Auth\SentinelUser;
 
@@ -131,7 +131,7 @@ final class SentinelUserTest extends \PHPUnit\Framework\TestCase
         $sentinel  = m::mock(Sentinel::class);
         $sentinel
             ->shouldReceive('getReminderRepository->exists')
-            ->andReturn($innerUser);
+            ->andReturn(true);
         $user = new SentinelUser($innerUser, $sentinel);
         $this->assertTrue($user->checkResetPasswordCode('asdfasdf'));
     }

@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace OpenCFP\Domain\Services;
 
 use Intervention\Image\ImageManagerStatic as Image;
-use League\Flysystem\FilesystemInterface;
+use League\Flysystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
@@ -40,7 +40,7 @@ class ProfileImageProcessor
     private $generator;
 
     /**
-     * @var FilesystemInterface
+     * @var Filesystem
      */
     private $filesystem;
 
@@ -52,10 +52,10 @@ class ProfileImageProcessor
     /**
      * @param string                $publishDir
      * @param RandomStringGenerator $generator
-     * @param FilesystemInterface   $filesystem
+     * @param Filesystem   $filesystem
      * @param int                   $applicationUserImageSize
      */
-    public function __construct(string $publishDir, RandomStringGenerator $generator, FilesystemInterface $filesystem, int $applicationUserImageSize = 300)
+    public function __construct(string $publishDir, RandomStringGenerator $generator, Filesystem $filesystem, int $applicationUserImageSize = 300)
     {
         $this->publishDir               = $publishDir;
         $this->generator                = $generator;

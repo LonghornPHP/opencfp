@@ -57,6 +57,7 @@ final class TalkRatingTest extends \PHPUnit\Framework\TestCase
         $mockAuth->shouldReceive('user')->andReturn($user);
 
         $metaMock = Mockery::mock(TalkMeta::class)->makePartial();
+        $metaMock->timestamps = false;
         $metaMock->shouldReceive('firstOrCreate')->andReturnSelf();
         $metaMock->shouldReceive('save');
 

@@ -19,10 +19,10 @@ use OpenCFP\Domain\Model;
 use OpenCFP\Domain\Services;
 use OpenCFP\Http\Form;
 use OpenCFP\Http\View;
-use OpenCFP\Infrastructure\Templating\Template;
-use Swift_Mailer;
-use Swift_Message;
 use Symfony\Component\HttpFoundation;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing;
 use Twig\Environment;
 
@@ -49,9 +49,9 @@ final class UpdateAction
     private $purifier;
 
     /**
-     * @var Swift_Mailer
+     * @var MailerInterface
      */
-    private $swiftMailer;
+    private $mailer;
 
     /**
      * @var string
@@ -88,7 +88,7 @@ final class UpdateAction
         View\TalkHelper $talkHelper,
         CallForPapers $callForPapers,
         HTMLPurifier $purifier,
-        Swift_Mailer $swiftMailer,
+        MailerInterface $mailer,
         Environment $twig,
         Routing\Generator\UrlGeneratorInterface $urlGenerator,
         string $applicationEmail,
@@ -99,7 +99,7 @@ final class UpdateAction
         $this->talkHelper         = $talkHelper;
         $this->callForPapers      = $callForPapers;
         $this->purifier           = $purifier;
-        $this->swiftMailer        = $swiftMailer;
+        $this->mailer             = $mailer;
         $this->twig               = $twig;
         $this->urlGenerator       = $urlGenerator;
         $this->applicationEmail   = $applicationEmail;
@@ -205,11 +205,8 @@ final class UpdateAction
         ]);
     }
 
-    private function sendSubmitEmail(Model\Talk $talk, string $email): int
+    private function sendSubmitEmail(Model\Talk $talk, string $email): void
     {
-        /** @var Template $template */
-        $template = $this->twig->loadTemplate('emails/talk_submit.twig');
-
         $parameters = [
             'email'   => $this->applicationEmail,
             'title'   => $this->applicationTitle,
@@ -218,22 +215,20 @@ final class UpdateAction
         ];
 
         try {
-            $message = new Swift_Message();
+            $template = $this->twig->load('emails/talk_submit.twig')->unwrap();
 
-            $message->setTo($email);
-            $message->setFrom(
-                $template->renderBlockWithContext('from', $parameters),
-                $template->renderBlockWithContext('from_name', $parameters)
-            );
+            $render = function (string $block) use ($template, $parameters): string {
+                return $template->renderBlock($block, $this->twig->mergeGlobals($parameters));
+            };
 
-            $message->setSubject($template->renderBlockWithContext('subject', $parameters));
-            $message->setBody($template->renderBlockWithContext('body_text', $parameters));
-            $message->addPart(
-                $template->renderBlockWithContext('body_html', $parameters),
-                'text/html'
-            );
+            $message = (new Email())
+                ->to($email)
+                ->from(new Address($render('from'), $render('from_name')))
+                ->subject($render('subject'))
+                ->text($render('body_text'))
+                ->html($render('body_html'));
 
-            return $this->swiftMailer->send($message);
+            $this->mailer->send($message);
         } catch (\Exception $e) {
             echo $e;
             die();

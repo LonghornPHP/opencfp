@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 $year = date('Y');
 
@@ -17,13 +17,13 @@ $finder = PhpCsFixer\Finder::create()
     ->exclude('cache')
     ->exclude('migrations');
 
-return PhpCsFixer\Config::create()
+return (new PhpCsFixer\Config())
     ->setUsingCache(true)
     ->setRiskyAllowed(true)
     ->setRules([
-        '@PSR2' => true,
+        '@PSR12' => true,
         'array_syntax' => [
-            'syntax' => 'short'
+            'syntax' => 'short',
         ],
         'binary_operator_spaces' => [
             'default' => 'align_single_space_minimal',
@@ -53,8 +53,8 @@ return PhpCsFixer\Config::create()
         'cast_spaces' => true,
         'class_attributes_separation' => [
             'elements' => [
-                'method',
-                'property',
+                'method' => 'one',
+                'property' => 'one',
             ],
         ],
         'combine_consecutive_unsets' => true,
@@ -71,12 +71,11 @@ return PhpCsFixer\Config::create()
             ],
         ],
         'header_comment' => [
-            'commentType' => 'PHPDoc',
+            'comment_type' => 'PHPDoc',
             'header' => $header,
         ],
         'increment_style' => true,
         'is_null' => true,
-        'method_separation' => true,
         'multiline_whitespace_before_semicolons' => [
             'strategy' => 'no_multi_line',
         ],
@@ -99,13 +98,11 @@ return PhpCsFixer\Config::create()
                 'switch',
                 'throw',
                 'use',
-                'use_trait',
             ],
         ],
-        'no_multiline_whitespace_around_double_arrow' => true,
         'no_singleline_whitespace_before_semicolons' => true,
         'no_superfluous_elseif' => true,
-        'no_trailing_comma_in_singleline_array' => true,
+        'no_trailing_comma_in_singleline' => true,
         'no_unneeded_control_parentheses' => true,
         'no_unused_imports' => true,
         'no_useless_else' => true,
@@ -113,10 +110,9 @@ return PhpCsFixer\Config::create()
         'no_whitespace_in_blank_line' => true,
         'ordered_imports' => true,
         'php_unit_expectation' => true,
-        'php_unit_no_expectation_annotation' => true,
         'php_unit_strict' => true,
         'php_unit_test_annotation' => [
-            'style' => 'annotation'
+            'style' => 'annotation',
         ],
         'php_unit_test_class_requires_covers' => false,
         'phpdoc_align' => true,
@@ -130,19 +126,19 @@ return PhpCsFixer\Config::create()
         'phpdoc_separation' => true,
         'phpdoc_trim' => true,
         'phpdoc_types_order' => true,
-        'psr0' => false,
         'return_type_declaration' => true,
         'self_accessor' => true,
-        'single_blank_line_before_namespace' => true,
         'single_quote' => true,
         'ternary_operator_spaces' => true,
-        'trailing_comma_in_multiline_array' => true,
+        'trailing_comma_in_multiline' => true,
         'trim_array_spaces' => true,
         'unary_operator_spaces' => true,
         'visibility_required' => [
-            'const',
-            'method',
-            'property',
+            'elements' => [
+                'const',
+                'method',
+                'property',
+            ],
         ],
         'whitespace_after_comma_in_array' => true,
         'yoda_style' => [

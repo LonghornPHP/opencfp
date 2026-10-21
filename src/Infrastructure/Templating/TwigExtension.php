@@ -55,12 +55,28 @@ class TwigExtension extends AbstractExtension
     {
         return [
             new TwigFilter('purify', [$this, 'purify'], ['is_safe' => ['html']]),
+            new TwigFilter('markdown', [$this, 'markdown'], ['is_safe' => ['html']]),
+            new TwigFilter('truncate', [$this, 'truncate']),
         ];
     }
 
     public function purify(string $content): string
     {
         return $this->purifier->purify($content);
+    }
+
+    public function markdown(string $content): string
+    {
+        return \Michelf\MarkdownExtra::defaultTransform($content);
+    }
+
+    public function truncate(string $value, int $length = 30, string $omission = '...'): string
+    {
+        if (\mb_strlen($value) <= $length) {
+            return $value;
+        }
+
+        return \rtrim(\mb_substr($value, 0, $length)) . $omission;
     }
 
     public function getFunctions()

@@ -25,10 +25,24 @@ wouterj_eloquent:
 twig:
   default_path: '%kernel.project_dir%/resources/views'
   debug: '%kernel.debug%'
-  base_template_class: 'OpenCFP\Infrastructure\Templating\Template'
+  # Templates use lenient variable access (e.g. {% if email %}); Symfony 6
+  # defaults strict_variables to %kernel.debug%, which would break them in tests.
+  strict_variables: false
   globals:
     site:       '%config.application%'
     talkHelper: '@OpenCFP\Http\View\TalkHelper'
+
+doctrine_migrations:
+  migrations_paths:
+    'OpenCFP\Migrations': '%kernel.project_dir%/migrations'
+  storage:
+    table_storage:
+      table_name: migration_versions
+      version_column_name: version
+      version_column_length: 1024
+      executed_at_column_name: executed_at
+  all_or_nothing: true
+  check_database_platform: true
 
 monolog:
   handlers:
@@ -36,11 +50,3 @@ monolog:
       type: stream
       path: '%kernel.logs_dir%/app.log'
       level: '%log.level%'
-
-swiftmailer:
-  host:       '%mail.host%'
-  port:       '%mail.port%'
-  username:   '%mail.username%'
-  password:   '%mail.password%'
-  encryption: '%mail.encryption%'
-  auth_mode:  '%mail.auth_mode%'

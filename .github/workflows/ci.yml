@@ -6,18 +6,18 @@ jobs:
     runs-on: ubuntu-latest
     services:
       mysql:
-        image: mysql:5.7
+        image: mysql:8.4
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: false
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: cfp_test
         ports:
-          - 3306
+          - 3306:3306
     strategy:
       fail-fast: false
       max-parallel: 2
       matrix:
-        php-versions: ['7.4']
+        php-versions: ['8.3']
     steps:
       - name: Checkout
         uses: actions/checkout@v1
@@ -39,9 +39,12 @@ jobs:
         run: |
           cp config/ci.yml.dist config/testing.yml
           cp resources/config/config_ci.yml resources/config/config_testing.yml
-          bin/console doctrine:database:create --env=testing
+          bin/console doctrine:database:create --env=testing --if-not-exists
           bin/console doctrine:migrations:migrate --env=testing -n
       - name: Build assets
+        env:
+          # webpack 4 uses md4 hashing, which OpenSSL 3 on modern Node rejects.
+          NODE_OPTIONS: --openssl-legacy-provider
         run: |
           yarn install
           yarn run production

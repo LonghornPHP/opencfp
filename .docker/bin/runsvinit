@@ -3,12 +3,13 @@
 sv_stop() {
     for s in /etc/service/*;
     do
-        /sbin/sv stop "$s"
+        sv stop "$s"
     done
 }
 
-chown -R nginx:nginx /srv/application/web/uploads /srv/application/cache/production /srv/application/log
+mkdir -p /srv/application/cache/production /srv/application/web/uploads /srv/application/log
+chown -R nginx:nginx /srv/application/web/uploads /srv/application/cache /srv/application/log
 
 trap "sv_stop; exit" SIGTERM
-/sbin/runsvdir /etc/service &
+runsvdir /etc/service &
 wait

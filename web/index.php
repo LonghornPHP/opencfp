@@ -15,7 +15,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use OpenCFP\Environment;
 use OpenCFP\Kernel;
-use Symfony\Component\Debug\Debug;
+use Symfony\Component\ErrorHandler\Debug;
 use Symfony\Component\HttpFoundation\Request;
 
 $basePath    = \realpath(\dirname(__DIR__));
@@ -32,7 +32,10 @@ if (\getenv('TRUST_PROXIES') ? \filter_var(\getenv('TRUST_PROXIES'), FILTER_VALI
     Request::setTrustedProxies(
         // trust *all* requests
         ['127.0.0.1', $request->server->get('REMOTE_ADDR')],
-        Request::HEADER_X_FORWARDED_ALL
+        Request::HEADER_X_FORWARDED_FOR
+        | Request::HEADER_X_FORWARDED_HOST
+        | Request::HEADER_X_FORWARDED_PORT
+        | Request::HEADER_X_FORWARDED_PROTO
     );
 }
 

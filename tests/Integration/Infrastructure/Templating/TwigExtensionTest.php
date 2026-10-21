@@ -44,7 +44,8 @@ final class TwigExtensionTest extends TestCase
         $twig->addExtension(new TwigExtension(
             $requestStack,
             $urlGenerator,
-            $path
+            $path,
+            new \HTMLPurifier(\HTMLPurifier_Config::createDefault())
         ));
 
         $this->assertStringEqualsFile(__DIR__ . '/Fixtures/functions.txt', $twig->render('functions.txt.twig'));

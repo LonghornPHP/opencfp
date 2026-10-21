@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace OpenCFP\Test\Unit\Console\Command;
 
-use Localheinz\Test\Util\Helper;
+use Ergebnis\Test\Util\Helper;
 use OpenCFP\Console\Command\UserDemoteCommand;
 use OpenCFP\Domain\Services;
 use OpenCFP\Infrastructure\Auth;
@@ -127,14 +127,14 @@ final class UserDemoteCommandTest extends Framework\TestCase
             $roleName
         );
 
-        $this->assertContains($sectionMessage, $commandTester->getDisplay());
+        $this->assertStringContainsString($sectionMessage, $commandTester->getDisplay());
 
         $failureMessage = \sprintf(
             'Could not find account with email "%s".',
             $email
         );
 
-        $this->assertContains($failureMessage, $commandTester->getDisplay());
+        $this->assertStringContainsString($failureMessage, $commandTester->getDisplay());
     }
 
     /**
@@ -175,14 +175,14 @@ final class UserDemoteCommandTest extends Framework\TestCase
             $roleName
         );
 
-        $this->assertContains($sectionMessage, $commandTester->getDisplay());
+        $this->assertStringContainsString($sectionMessage, $commandTester->getDisplay());
 
         $failureMessage = \sprintf(
             'Could not find role with name "%s".',
             $roleName
         );
 
-        $this->assertContains($failureMessage, $commandTester->getDisplay());
+        $this->assertStringContainsString($failureMessage, $commandTester->getDisplay());
     }
 
     /**
@@ -223,14 +223,14 @@ final class UserDemoteCommandTest extends Framework\TestCase
             $roleName
         );
 
-        $this->assertContains($sectionMessage, $commandTester->getDisplay());
+        $this->assertStringContainsString($sectionMessage, $commandTester->getDisplay());
 
         $failureMessage = \sprintf(
             'Could not demote account with email "%s".',
             $email
         );
 
-        $this->assertContains($failureMessage, $commandTester->getDisplay());
+        $this->assertStringContainsString($failureMessage, $commandTester->getDisplay());
     }
 
     /**
@@ -270,7 +270,7 @@ final class UserDemoteCommandTest extends Framework\TestCase
             $roleName
         );
 
-        $this->assertContains($sectionMessage, $commandTester->getDisplay());
+        $this->assertStringContainsString($sectionMessage, $commandTester->getDisplay());
 
         $successMessage = \sprintf(
             'Removed account with email "%s" from the "%s" group.',
@@ -278,7 +278,7 @@ final class UserDemoteCommandTest extends Framework\TestCase
             $roleName
         );
 
-        $this->assertContains($successMessage, $commandTester->getDisplay());
+        $this->assertStringContainsString($successMessage, $commandTester->getDisplay());
     }
 
     /**

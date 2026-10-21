@@ -118,5 +118,7 @@ final class UserCreateCommand extends Command
         }
 
         $io->success('User Created');
+
+        return 0;
     }
 }

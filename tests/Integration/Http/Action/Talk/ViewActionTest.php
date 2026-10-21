@@ -25,7 +25,7 @@ final class ViewActionTest extends WebTestCase implements TransactionalTestCase
      */
     public function willDisplayOwnTalk()
     {
-        $accounts = self::$container->get(AccountManagement::class);
+        $accounts = self::getContainer()->get(AccountManagement::class);
 
         $user = $accounts->create('someone@example.com', 'some password');
         $accounts->activate($user->getLogin());

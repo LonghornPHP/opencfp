@@ -16,20 +16,20 @@ namespace OpenCFP\Http\Controller\Admin;
 use OpenCFP\Domain\Model\Talk;
 use OpenCFP\Http\Controller\BaseController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Environment;
 
 class ExportsController extends BaseController
 {
     /**
-     * @var SessionInterface
+     * @var RequestStack
      */
-    private $session;
+    private $requestStack;
 
-    public function __construct(Environment $twig, UrlGeneratorInterface $urlGenerator, SessionInterface $session)
+    public function __construct(Environment $twig, UrlGeneratorInterface $urlGenerator, RequestStack $requestStack)
     {
-        $this->session = $session;
+        $this->requestStack = $requestStack;
 
         parent::__construct($twig, $urlGenerator);
     }
@@ -124,7 +124,7 @@ class ExportsController extends BaseController
     private function csvReturn(array $contents, string $filename = 'data')
     {
         if (\count($contents) === 0) {
-            $this->session->set('flash', [
+            $this->requestStack->getSession()->set('flash', [
                 'type'  => 'error',
                 'short' => 'Error',
                 'ext'   => 'There were no talks that matched selected criteria.',
